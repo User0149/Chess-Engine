@@ -1,5 +1,7 @@
 import { createContext, useState, type ReactNode } from "react";
+
 import type { BoardState, File, GameProgress, GameState, Piece, PieceType, PlayerColor, Rank, Square, StateSetter } from "../types/types";
+
 import { squareToIndices } from "../utils/coordinateConverter";
 
 interface IGameContext {
@@ -10,13 +12,16 @@ interface IGameContext {
     setGameProgress: StateSetter<GameProgress>;
     setPlayerColor: StateSetter<PlayerColor>;
     setGameState: StateSetter<GameState>;
+
+    resetGame: () => void;
+    playAs: (color: PlayerColor) => void;
 }
 
 interface GameContextProviderProps {
     children: ReactNode;
 }
 
-const GameContext = createContext<IGameContext>({
+export const GameContext = createContext<IGameContext>({
     gameProgress: "not started",
     playerColor: "white",
     gameState: {
@@ -29,7 +34,10 @@ const GameContext = createContext<IGameContext>({
 
     setGameProgress: () => {},
     setPlayerColor: () => {},
-    setGameState: () => {}
+    setGameState: () => {},
+
+    resetGame: () => {},
+    playAs: () => {}
 });
 
 export default function GameContextProvider({ children }: GameContextProviderProps) {
@@ -37,12 +45,12 @@ export default function GameContextProvider({ children }: GameContextProviderPro
     const [playerColor, setPlayerColor] = useState<PlayerColor>("white");
 
     const initialBoardState = () => {
-        const initialBoard: BoardState = new Array(8).fill(new Array(8).fill({
+        const initialBoard: BoardState = Array.from({length: 8}, () => Array.from({length: 8}, () => ({
             active: false,
             color: "white",
             type: "pawn",
             lastMoveIndex: 0
-        } as Piece));
+        } as Piece)));
 
         const colors: PlayerColor[] = ["white", "black"];
 
@@ -110,6 +118,23 @@ export default function GameContextProvider({ children }: GameContextProviderPro
         boardState: initialBoardState()
     });
 
+    const resetGame = () => {
+        setGameProgress("not started");
+        setPlayerColor("white");
+        setGameState({
+            moves: 0,
+            previousStates: {},
+            lastCaptureOrPawnMove: 0,
+            toMove: "white",
+            boardState: initialBoardState()
+        });
+    };
+
+    const playAs = (color: PlayerColor) => {
+        setGameProgress("in progress");
+        setPlayerColor(color);
+    };
+
     const initialGameContext: IGameContext = {
         gameProgress,
         playerColor,
@@ -117,7 +142,10 @@ export default function GameContextProvider({ children }: GameContextProviderPro
 
         setGameProgress,
         setPlayerColor,
-        setGameState
+        setGameState,
+
+        resetGame,
+        playAs
     };
 
     return (
