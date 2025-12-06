@@ -1,11 +1,11 @@
-
-import './App.css';
+import GameContextProvider from "./context/GameContext";
 
 function App() {
-  return (
-    <>
-    </>
-  )
+    return (
+        <GameContextProvider>
+            UI in progress.
+        </GameContextProvider>
+    )
 }
 
 export default App;
