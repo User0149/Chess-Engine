@@ -2,7 +2,7 @@ import { createContext, useState, type ReactNode } from "react";
 
 import type { BoardState, File, GameProgress, GameState, Piece, PieceType, PlayerColor, Rank, Square, StateSetter } from "../types/types";
 
-import { squareToIndices } from "../utils/coordinateConverter";
+import { squareToCoord } from "../utils/coordinateConverter";
 
 interface IGameContext {
     gameProgress: GameProgress;
@@ -74,8 +74,8 @@ export default function GameContextProvider({ children }: GameContextProviderPro
                     const rank = initialPieceRanks[color];
 
                     const square: Square = {file, rank};
-                    const indices = squareToIndices(square);
-                    initialBoard[indices[0]][indices[1]] = {
+                    const coord = squareToCoord(square);
+                    initialBoard[coord[0]][coord[1]] = {
                         active: true,
                         color,
                         type: playingPiece as NonPawnPiece,
@@ -97,8 +97,8 @@ export default function GameContextProvider({ children }: GameContextProviderPro
                 const rank = initialPawnRanks[color];
 
                 const square: Square = {file, rank};
-                const indices = squareToIndices(square);
-                initialBoard[indices[0]][indices[1]] = {
+                const coord = squareToCoord(square);
+                initialBoard[coord[0]][coord[1]] = {
                     active: true,
                     color,
                     type: "pawn",

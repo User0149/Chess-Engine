@@ -37,6 +37,7 @@ export interface Square {
 export interface Move {
     source: Square;
     dest: Square;
+    newPiece: PieceType;
 }
 
-export type PossibleMoves = [Move, GameState][];
+export type PossibleMove = [Move, GameState];

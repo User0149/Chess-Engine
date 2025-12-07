@@ -3,7 +3,7 @@ import { useContext } from "react";
 import type { File, Rank } from "../types/types";
 
 import { GameContext } from "../context/GameContext";
-import { squareToIndices } from "../utils/coordinateConverter";
+import { squareToCoord } from "../utils/coordinateConverter";
 import { ThemeContext } from "../context/ThemeContext";
 
 interface SquareProps {
@@ -15,7 +15,7 @@ function Square({ file, rank }: SquareProps) {
     const { bgWhite, bgBlack } = useContext(ThemeContext);
     const { playerColor, gameProgress, gameState } = useContext(GameContext);
 
-    const coordinate = squareToIndices({file, rank});
+    const coordinate = squareToCoord({file, rank});
     const piece = gameState.boardState[coordinate[0]][coordinate[1]];
 
     const playersTurn = gameProgress === "in progress" && (gameState.toMove === playerColor);
