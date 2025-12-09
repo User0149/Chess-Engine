@@ -1,10 +1,10 @@
-// #include <emscripten/bind.h>
+#include <emscripten/bind.h>
 #include "strategies.h"
 #include <chrono>
 #include <random>
 #include "possible_moves.h"
 
-// using namespace emscripten;
+using namespace emscripten;
 
 PossibleMove random_move(const GameState &game_state) {
     static std::mt19937 rng(time(0));
@@ -13,6 +13,6 @@ PossibleMove random_move(const GameState &game_state) {
     return moves[int(rng()%((int)moves.size()))];
 }
 
-// EMSCRIPTEN_BINDINGS(strategies) {
-//     function("randomMove", &random_move);
-// }
+EMSCRIPTEN_BINDINGS(strategies) {
+    function("randomMove", &random_move);
+}

@@ -1,8 +1,8 @@
-// #include <emscripten/bind.h>
+#include <emscripten/bind.h>
 #include "game_helper_funcs.h"
 #include "utils.h"
 
-// using namespace emscripten;
+using namespace emscripten;
 
 // non-castling and non-pawn moves
 std::vector<PossibleMove> normal_piece_moves(const GameState &game_state, Piece piece, Square square) {
@@ -268,6 +268,6 @@ std::vector<PossibleMove> possible_moves(const GameState &game_state) {
     return allowed_moves;
 }
 
-// EMSCRIPTEN_BINDINGS(possible_moves) {
-//     function("possibleMoves", &possible_moves);
-// }
+EMSCRIPTEN_BINDINGS(possible_moves) {
+    function("possibleMoves", &possible_moves);
+}

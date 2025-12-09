@@ -1,9 +1,9 @@
-// #include <emscripten/bind.h>
+#include <emscripten/bind.h>
 #include "game_helper_funcs.h"
 #include "possible_moves.h"
 #include "utils.h"
 
-// using namespace emscripten;
+using namespace emscripten;
 
 Square king_square(const GameState &game_state) {
     for (int i = 0; i <= 7; i++) {
@@ -74,8 +74,7 @@ bool is_checkmate(const GameState &game_state) {
     return possible_moves(game_state).empty() && is_targeted(game_state, king_square(game_state));
 }
 
-
-// EMSCRIPTEN_BINDINGS(game_helper_funcs) {
-//     function("isStalemate", &is_stalemate);
-//     function("isCheckmate", &is_checkmate);
-// }
+EMSCRIPTEN_BINDINGS(game_helper_funcs) {
+    function("isStalemate", &is_stalemate);
+    function("isCheckmate", &is_checkmate);
+}
