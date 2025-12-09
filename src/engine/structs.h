@@ -10,6 +10,17 @@ struct Coordinate {
     int j = 0;
 };
 
+struct Square {
+    char file = 'a';
+    char rank = '1';
+};
+
+struct Move {
+    Square source = {'a', '1'};
+    Square dest = {'a', '1'};
+    std::string promote_to = "";
+};
+
 struct Piece {
     bool active = false;
 
@@ -58,7 +69,14 @@ struct GameState {
 
     std::vector<std::vector<Piece>> board_state = std::vector<std::vector<Piece>>(8, std::vector<Piece>(8));
 
-    std::string hash() {
+    GameState(int _moves, std::map<std::string, int> _previous_states, int _last_capture_or_pawn_move, std::string _to_move, std::vector<std::vector<Piece>> _board_state) {
+        moves = _moves;
+        previous_states = _previous_states;
+        to_move = _to_move;
+        board_state = _board_state;
+    }
+
+    std::string hash() { // TODO: this hash doesn't take into account en passant and castling rights when hashing the state
         std::string position_string;
         for (int i = 0; i <= 7; i++) {
             for (int j = 0; j <= 7; j++) {
@@ -67,26 +85,9 @@ struct GameState {
             }
         }
 
-        std::string moves_string;
-        for (auto [move, new_game_state]:possible_moves(*this)) {
-            moves_string += ((((("" + move.source.file) + move.source.rank) + move.dest.file) + move.dest.rank) + move.promote_to);
-        }
-
-
-        std::string state = to_move + position_string + moves_string;
+        std::string state = to_move + position_string;
         return std::to_string(std::hash<std::string>{}(state));
     }
-};
-
-struct Square {
-    char file = 'a';
-    char rank = '1';
-};
-
-struct Move {
-    Square source = {'a', '1'};
-    Square dest = {'a', '1'};
-    std::string promote_to = "";
 };
 
 struct PossibleMove {

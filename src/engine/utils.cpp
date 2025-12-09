@@ -1,4 +1,4 @@
-#include <utils.h>
+#include "structs.h"
 
 Coordinate square_to_coord(Square square) {
     Coordinate coord;
@@ -7,7 +7,7 @@ Coordinate square_to_coord(Square square) {
     return coord;
 }
 Square coord_to_square(Coordinate coord) {
-    Square square = {'a' + coord.i, coord.j + '1'};
+    Square square = {char('a' + coord.i), char(coord.j + '1')};
     return square;
 }
 

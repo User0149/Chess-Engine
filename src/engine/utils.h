@@ -1,4 +1,5 @@
 #pragma once
+
 #include "structs.h"
 
 Coordinate square_to_coord(Square square);

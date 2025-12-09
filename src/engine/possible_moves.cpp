@@ -1,6 +1,8 @@
-#include "possible_moves.h"
+// #include <emscripten/bind.h>
 #include "game_helper_funcs.h"
 #include "utils.h"
+
+// using namespace emscripten;
 
 // non-castling and non-pawn moves
 std::vector<PossibleMove> normal_piece_moves(const GameState &game_state, Piece piece, Square square) {
@@ -122,12 +124,12 @@ std::vector<PossibleMove> pawn_non_en_passant_moves(const GameState &game_state,
     std::vector<Coordinate> potential_dest_coords;
 
     // add forward moves
-    Square forward_1_square = {pawn_square.file, pawn_square.rank + move_direction_rank};
+    Square forward_1_square = {pawn_square.file, char(pawn_square.rank + move_direction_rank)};
     Coordinate forward_1_coord = square_to_coord(forward_1_square);
     if (!game_state.board_state[forward_1_coord.i][forward_1_coord.j].active) { // can move forward one square
         potential_dest_coords.push_back(forward_1_coord);
 
-        Square forward_2_square = {pawn_square.file, pawn_square.rank + 2*move_direction_rank};
+        Square forward_2_square = {pawn_square.file, char(pawn_square.rank + 2*move_direction_rank)};
         Coordinate forward_2_coord = square_to_coord(forward_2_square);
         if (pawn.last_move_index == 0 && !game_state.board_state[forward_2_coord.i][forward_2_coord.j].active) { // first move and can move 2 squares forward
             potential_dest_coords.push_back(forward_2_coord);
@@ -135,7 +137,7 @@ std::vector<PossibleMove> pawn_non_en_passant_moves(const GameState &game_state,
     }
     
     // add capture moves
-    std::vector<Coordinate> capture_coords = {square_to_coord({pawn_square.file - 1, pawn_square.rank  + move_direction_rank}), square_to_coord({pawn_square.file + 1, pawn_square.rank  + move_direction_rank})};
+    std::vector<Coordinate> capture_coords = {square_to_coord({char(pawn_square.file - 1), char(pawn_square.rank  + move_direction_rank)}), square_to_coord({char(pawn_square.file + 1), char(pawn_square.rank  + move_direction_rank)})};
 
     for (Coordinate capture_coord:capture_coords) {
         if (valid_coord(capture_coord) && game_state.board_state[capture_coord.i][capture_coord.j].color != game_state.to_move && game_state.board_state[capture_coord.i][capture_coord.j].active) {
@@ -157,6 +159,7 @@ std::vector<PossibleMove> pawn_non_en_passant_moves(const GameState &game_state,
             new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
             new_game_state.last_capture_or_pawn_move = game_state.moves + 1;
 
+            
             // move piece
             new_game_state.board_state[pawn_coord.i][pawn_coord.j].active = false;
             new_game_state.board_state[dest_coord.i][dest_coord.j] = pawn;
@@ -185,8 +188,8 @@ std::vector<PossibleMove> pawn_en_passant_moves(const GameState &game_state, Pie
     if (pawn_square.rank == (game_state.to_move == "white" ? 5 : 4)) {
         std::vector<int> potential_file_increments;
         for (int file_inc:{-1, 1}) {
-            Coordinate adjacent_coord = square_to_coord({pawn_square.file + file_inc, pawn_square.rank});
-            Coordinate dest_coord = square_to_coord({pawn_square.file + file_inc, pawn_square.rank + move_direction_rank});
+            Coordinate adjacent_coord = square_to_coord({char(pawn_square.file + file_inc), pawn_square.rank});
+            Coordinate dest_coord = square_to_coord({char(pawn_square.file + file_inc), char(pawn_square.rank + move_direction_rank)});
 
             if (valid_coord(adjacent_coord)) {
                 Piece adjacent_piece = game_state.board_state[adjacent_coord.i][adjacent_coord.j];
@@ -264,3 +267,7 @@ std::vector<PossibleMove> possible_moves(const GameState &game_state) {
 
     return allowed_moves;
 }
+
+// EMSCRIPTEN_BINDINGS(possible_moves) {
+//     function("possibleMoves", &possible_moves);
+// }

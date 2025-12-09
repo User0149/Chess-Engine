@@ -1,4 +1,5 @@
 #pragma once
+
 #include "structs.h"
 
 Square king_square(const GameState &game_state);
