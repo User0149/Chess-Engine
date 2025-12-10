@@ -18,7 +18,7 @@ std::vector<PossibleMove> normal_piece_moves(const GameState &game_state, Piece 
             int dest_j = piece_coords.j + (r * direction.j);
 
             if (!valid_coord({dest_i, dest_j})) {
-                continue;
+                break;
             }
             
             Piece dest_piece = game_state.board_state[dest_i][dest_j];

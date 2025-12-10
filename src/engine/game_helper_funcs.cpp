@@ -32,7 +32,7 @@ bool is_targeted(const GameState &game_state, Square test_square) {
                             int dest_j = coord.j + (r * direction.j);
 
                             if (!valid_coord({dest_i, dest_j})) {
-                                continue;
+                                break;
                             }
                             
                             Piece dest_piece = game_state.board_state[dest_i][dest_j];
@@ -54,7 +54,7 @@ bool is_targeted(const GameState &game_state, Square test_square) {
                     std::vector<Square> capture_squares = {{char(square.file - 1), char(square.rank  + move_direction_rank)}, {char(square.file + 1), char(square.rank  + move_direction_rank)}};
 
                     for (Square attacked_square:capture_squares) {
-                        if (attacked_square.file == test_square.file && attacked_square.rank && test_square.rank) {
+                        if (attacked_square.file == test_square.file && attacked_square.rank == test_square.rank) {
                             return true;
                         }
                     }
