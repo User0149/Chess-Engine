@@ -14,7 +14,7 @@ Square king_square(const GameState &game_state) {
             }
         }
     }
-    return {'-', '-'};
+    return {"-", "-"};
 }
 
 bool is_targeted(const GameState &game_state, Square test_square) {
@@ -51,7 +51,7 @@ bool is_targeted(const GameState &game_state, Square test_square) {
                 }
                 else {
                     int move_direction_rank = (piece.color == "white" ? 1 : -1);
-                    std::vector<Square> capture_squares = {{char(square.file - 1), char(square.rank  + move_direction_rank)}, {char(square.file + 1), char(square.rank  + move_direction_rank)}};
+                    std::vector<Square> capture_squares = {{std::string(1, square.file[0] - 1), std::string(1, square.rank[0] + move_direction_rank)}, {std::string(1, square.file[0] + 1), std::string(1, square.rank[0]  + move_direction_rank)}};
 
                     for (Square attacked_square:capture_squares) {
                         if (attacked_square.file == test_square.file && attacked_square.rank == test_square.rank) {

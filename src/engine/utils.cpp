@@ -2,12 +2,13 @@
 
 Coordinate square_to_coord(Square square) {
     Coordinate coord;
-    coord.i = square.file - 'a';
-    coord.j = square.rank - '1';
+    coord.i = square.file[0] - 'a';
+    coord.j = square.rank[0] - '1';
     return coord;
 }
+
 Square coord_to_square(Coordinate coord) {
-    Square square = {char('a' + coord.i), char(coord.j + '1')};
+    Square square = {std::string(1, 'a' + coord.i), std::string(1, coord.j + '1')};
     return square;
 }
 

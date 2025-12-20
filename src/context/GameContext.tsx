@@ -1,13 +1,17 @@
-import { createContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-import type { BoardState, File, GameProgress, GameState, Piece, PieceType, PlayerColor, Rank, Square, StateSetter } from "../types/types";
+import { type BoardState, type File, type GameProgress, type GameState, type Move, type Piece, type PieceType, type PlayerColor, type PossibleMove, type Rank, type Square, type StateSetter } from "../types/types";
 
 import { squareToCoord } from "../utils/coordinateConverter";
+import { toPieceVectorVector, toStringIntMap } from "../utils/jsToEmbind";
+
+import { EngineContext } from "./EngineContext";
 
 interface IGameContext {
     gameProgress: GameProgress;
     playerColor: PlayerColor;
     gameState: GameState;
+    lastMove: Move;
 
     setGameProgress: StateSetter<GameProgress>;
     setPlayerColor: StateSetter<PlayerColor>;
@@ -31,6 +35,11 @@ export const GameContext = createContext<IGameContext>({
         toMove: "white",
         boardState: [[]]
     },
+    lastMove: {
+        source: { file: "a", rank: "1" },
+        dest: { file: "a", rank: "1" },
+        newPiece: "pawn"
+    },
 
     setGameProgress: () => {},
     setPlayerColor: () => {},
@@ -43,12 +52,22 @@ export const GameContext = createContext<IGameContext>({
 export default function GameContextProvider({ children }: GameContextProviderProps) {
     const [gameProgress, setGameProgress] = useState<GameProgress>("not started");
     const [playerColor, setPlayerColor] = useState<PlayerColor>("white");
+    
+    const [lastMove, setLastMove] = useState<Move>({
+        source: { file: "a", rank: "1" },
+        dest: { file: "a", rank: "1" },
+        newPiece: "pawn"
+    });
+
+    const engine: any = useContext(EngineContext);
 
     const initialBoardState = () => {
-        const initialBoard: BoardState = Array.from({length: 8}, () => Array.from({length: 8}, () => ({
+        const initialBoard: BoardState = Array.from({ length: 8 }, () => Array.from({ length: 8 }, () => ({
             active: false,
             color: "white",
             type: "pawn",
+
+            moves: 0,
             lastMoveIndex: 0
         } as Piece)));
 
@@ -79,6 +98,8 @@ export default function GameContextProvider({ children }: GameContextProviderPro
                         active: true,
                         color,
                         type: playingPiece as NonPawnPiece,
+
+                        moves: 0,
                         lastMoveIndex: 0
                     };
                 }
@@ -102,6 +123,8 @@ export default function GameContextProvider({ children }: GameContextProviderPro
                     active: true,
                     color,
                     type: "pawn",
+                    
+                    moves: 0,
                     lastMoveIndex: 0
                 };
             }
@@ -117,6 +140,23 @@ export default function GameContextProvider({ children }: GameContextProviderPro
         toMove: "white",
         boardState: initialBoardState()
     });
+
+    useEffect(() => {
+        if (gameProgress == "in progress" && gameState.toMove !== playerColor) { // do computer's move
+            console.log("Making computer move");
+            // const computerMove: PossibleMove = engine.randomMove({
+            //     ...gameState,
+            //     previousStates: toStringIntMap(engine, gameState.previousStates),
+            //     boardState: toPieceVectorVector(engine, gameState.boardState)
+            // });
+            // makeMove(computerMove);
+        }
+    }, [gameState, gameProgress]);
+
+    const makeMove = (move: PossibleMove) => {
+        setGameState(move.gameState);
+        setLastMove(move.move);
+    }
 
     const resetGame = () => {
         setGameProgress("not started");
@@ -139,6 +179,7 @@ export default function GameContextProvider({ children }: GameContextProviderPro
         gameProgress,
         playerColor,
         gameState,
+        lastMove,
 
         setGameProgress,
         setPlayerColor,

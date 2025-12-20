@@ -1,9 +1,23 @@
 import type { GameState, PieceType, PlayerColor } from "../types/types";
 
-function isCheckmate(gameState: GameState) { // TODO: complete
+import { toPieceVectorVector, toStringIntMap } from "../utils/jsToEmbind";
+
+function isCheckmate(engine: any, gameState: GameState) {
+    if (!engine.isCheckmate) return false;
+    return engine.isCheckmate({
+        ...gameState,
+        previousStates: toStringIntMap(engine, gameState.previousStates),
+        boardState: toPieceVectorVector(engine, gameState.boardState)
+    });
 }
 
-function isStalemate(gameState: GameState) { // TODO: complete
+function isStalemate(engine: any, gameState: GameState) {
+    if (!engine.isStalemate) return false;
+    return engine.isStalemate({
+        ...gameState,
+        previousStates: toStringIntMap(engine, gameState.previousStates),
+        boardState: toPieceVectorVector(engine, gameState.boardState)
+    });
 }
 
 function threefoldRepetition(gameState: GameState) {
@@ -30,10 +44,10 @@ function insufficientMaterial(gameState: GameState): boolean {
                 const pieceType: Exclude<PieceType, "bishop"> | "light bishop" | "dark bishop" = (piece.type === "bishop" ? (squareColor == "light" ? "light bishop" : "dark bishop"): piece.type);
 
                 if (color === "white") {
-                    whiteMaterial.push(pieceType);
+                    materialCount.whiteMaterial.push(pieceType);
                 }
                 else {
-                    blackMaterial.push(pieceType);
+                    materialCount.blackMaterial.push(pieceType);
                 }
             }
         }
@@ -67,11 +81,11 @@ function insufficientMaterial(gameState: GameState): boolean {
     }
 }
 
-export function gameResult(gameState: GameState, playerColor: PlayerColor) {
-    if (isCheckmate(gameState)) {
+export function gameResult(gameState: GameState, playerColor: PlayerColor, engine: any) {
+    if (isCheckmate(engine, gameState)) {
         return `${gameState.toMove === playerColor ? "Computer" : "You"} won by checkmate.`;
     }
-    if (isStalemate(gameState)) {
+    if (isStalemate(engine, gameState)) {
         return "Draw by stalemate."
     }
     if (threefoldRepetition(gameState)) {
@@ -81,7 +95,7 @@ export function gameResult(gameState: GameState, playerColor: PlayerColor) {
         return "Draw by 50-move rule.";
     }
     if (insufficientMaterial(gameState)) {
-
+        return "Draw by insufficient material.";
     }
-    return "Computer won by checkmate.";
+    return "Game has not ended. You should not be seeing this.";
 }

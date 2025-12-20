@@ -1,4 +1,5 @@
 #include <emscripten/bind.h>
+
 #include "strategies.h"
 #include <chrono>
 #include <random>

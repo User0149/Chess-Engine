@@ -2,7 +2,6 @@ export type StateSetter<T> = React.Dispatch<React.SetStateAction<T>>;
 export type Coordinate = [row: number, col: number];
 
 export type GameProgress = "in progress" | "not started" | "finished";
-export type GameResult = "You win by checkmate" | "Computer wins by checkmate" | "Draw by stalemate" | "Draw by repetition" | "Draw by 50-move rule" | "Draw by insufficient material";
 
 export type PlayerColor = "black" | "white";
 export type PieceType = "pawn" | "rook" | "knight" | "bishop" | "queen" | "king";
@@ -12,6 +11,8 @@ export interface Piece {
     
     color: PlayerColor;
     type: PieceType;
+
+    moves: number;
     lastMoveIndex: number;
 }
 
@@ -40,4 +41,7 @@ export interface Move {
     newPiece: PieceType;
 }
 
-export type PossibleMove = [Move, GameState];
+export type PossibleMove = {
+    move: Move;
+    gameState: GameState;
+}

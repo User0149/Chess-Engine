@@ -4,6 +4,7 @@ import { gameResult } from "../lib/gameInfo";
 
 import { GameContext } from "../context/GameContext";
 import { ThemeContext } from "../context/ThemeContext";
+import { EngineContext } from "../context/EngineContext";
 
 function PlayAsPrompt() {
     const { bgWhite, bgBlack } = useContext(ThemeContext);
@@ -33,10 +34,11 @@ function ToMove() {
 
 function GameResult() {
     const { gameState, playerColor } = useContext(GameContext);
+    const engine = useContext(EngineContext);
 
     return (
         <div className="text-center text-4xl">
-            {gameResult(gameState, playerColor)}
+            {gameResult(gameState, playerColor, engine)}
         </div>
     );
 }
