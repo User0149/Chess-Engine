@@ -22,31 +22,34 @@ std::vector<PossibleMove> normal_piece_moves(const GameState &game_state, Piece 
             }
             
             Piece dest_piece = game_state.board_state[dest_i][dest_j];
-            if (!dest_piece.active || dest_piece.color != game_state.to_move) { // we can move to this square (ignoring king checks)
-                GameState new_game_state = game_state;
+            if (dest_piece.active && dest_piece.color == game_state.to_move) { // can't move past a friendly piece
+                break;
+            }
 
-                new_game_state.moves = game_state.moves + 1;
-                new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
-                if (dest_piece.active && dest_piece.color != game_state.to_move) {
-                    new_game_state.last_capture_or_pawn_move = game_state.moves + 1;
-                }
+            // we can move to this square (ignoring king checks)
+            GameState new_game_state = game_state;
 
-                // move piece
-                new_game_state.board_state[piece_coords.i][piece_coords.j].active = false;
-                new_game_state.board_state[dest_i][dest_j] = piece;
-                new_game_state.board_state[dest_i][dest_j].moves = piece.moves + 1;
-                new_game_state.board_state[dest_i][dest_j].last_move_index = game_state.moves + 1;
+            new_game_state.moves = game_state.moves + 1;
+            new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
+            if (dest_piece.active && dest_piece.color != game_state.to_move) {
+                new_game_state.last_capture_or_pawn_move = game_state.moves + 1;
+            }
 
-                new_game_state.previous_states[new_game_state.hash()]++;
+            // move piece
+            new_game_state.board_state[piece_coords.i][piece_coords.j].active = false;
+            new_game_state.board_state[dest_i][dest_j] = piece;
+            new_game_state.board_state[dest_i][dest_j].moves = piece.moves + 1;
+            new_game_state.board_state[dest_i][dest_j].last_move_index = game_state.moves + 1;
 
-                if (!is_targeted(new_game_state, king_square(new_game_state))) { // we don't put our king in check, so this move is valid
-                    Move move = {square, coord_to_square({dest_i, dest_j}), piece.type};
-                    allowed_moves.push_back({move, new_game_state});
-                }
+            new_game_state.previous_states[new_game_state.hash()]++;
 
-                if (dest_piece.color != game_state.to_move) { // opponent was on this square, so we can't move any further
-                    break;
-                }
+            if (!is_targeted(new_game_state, king_square(new_game_state))) { // we don't put our king in check, so this move is valid
+                Move move = {square, coord_to_square({dest_i, dest_j}), piece.type};
+                allowed_moves.push_back({move, new_game_state});
+            }
+
+            if (dest_piece.color != game_state.to_move) { // opponent was on this square, so we can't move any further
+                break;
             }
         }
     }
