@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { type BoardState, type File, type GameProgress, type GameState, type Move, type Piece, type PieceType, type PlayerColor, type PossibleMove, type Rank, type Square, type StateSetter } from "../types/types";
 
 import { squareToCoord } from "../utils/coordinateConverter";
-import { toPieceVectorVector, toStringIntMap } from "../utils/jsToEmbind";
+import { toBoardState, toPieceVectorVector, toRecordStringNumber, toStringIntMap } from "../utils/jsEmbindConverter";
 
 import { EngineContext } from "./EngineContext";
 
@@ -144,17 +144,21 @@ export default function GameContextProvider({ children }: GameContextProviderPro
     useEffect(() => {
         if (gameProgress == "in progress" && gameState.toMove !== playerColor) { // do computer's move
             console.log("Making computer move");
-            // const computerMove: PossibleMove = engine.randomMove({
-            //     ...gameState,
-            //     previousStates: toStringIntMap(engine, gameState.previousStates),
-            //     boardState: toPieceVectorVector(engine, gameState.boardState)
-            // });
-            // makeMove(computerMove);
+            const computerMove: PossibleMove = engine.randomMove({
+                ...gameState,
+                previousStates: toStringIntMap(engine, gameState.previousStates),
+                boardState: toPieceVectorVector(engine, gameState.boardState)
+            });
+            makeMove(computerMove);
         }
     }, [gameState, gameProgress]);
 
     const makeMove = (move: PossibleMove) => {
-        setGameState(move.gameState);
+        setGameState({
+            ...move.gameState,
+            previousStates: toRecordStringNumber(move.gameState.previousStates),
+            boardState: toBoardState(move.gameState.boardState)
+        });
         setLastMove(move.move);
     }
 

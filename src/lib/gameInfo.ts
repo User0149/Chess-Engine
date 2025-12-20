@@ -1,6 +1,6 @@
 import type { GameState, PieceType, PlayerColor } from "../types/types";
 
-import { toPieceVectorVector, toStringIntMap } from "../utils/jsToEmbind";
+import { toPieceVectorVector, toStringIntMap } from "../utils/jsEmbindConverter";
 
 function isCheckmate(engine: any, gameState: GameState) {
     if (!engine.isCheckmate) return false;
