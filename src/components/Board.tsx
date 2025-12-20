@@ -21,7 +21,7 @@ function Square({ file, rank }: SquareProps) {
     const playersTurn = gameProgress === "in progress" && (gameState.toMove === playerColor);
 
     return (
-        <div className={`aspect-square ${(coordinate[0]%2 == coordinate[1]%2) ? bgWhite : bgBlack}`}>
+        <div className={`aspect-square ${(coordinate[0]%2 == coordinate[1]%2) ? bgBlack : bgWhite}`}>
             {
                 piece.active && 
                 <div className={`h-full w-full flex items-center justify-center select-none ${playersTurn ? "cursor-pointer" : "cursor-not-allowed"}`}>
