@@ -12,21 +12,25 @@ interface SquareProps {
 }
 
 function Square({ file, rank }: SquareProps) {
-    const { bgWhite, bgBlack } = useContext(ThemeContext);
-    const { playerColor, gameProgress, gameState } = useContext(GameContext);
+    const { bgWhite, bgBlack, bgSelected } = useContext(ThemeContext);
+    const { playerColor, gameProgress, gameState, lastMove } = useContext(GameContext);
 
     const coordinate = squareToCoord({file, rank});
     const piece = gameState.boardState[coordinate[0]][coordinate[1]];
 
+    const squareInvolvedInLastMove = gameState.moves >= 1 && ((lastMove.source.file === file && lastMove.source.rank === rank) || (lastMove.dest.file == file && lastMove.dest.rank === rank));
     const playersTurn = gameProgress === "in progress" && (gameState.toMove === playerColor);
 
     return (
-        <div className={`aspect-square ${(coordinate[0]%2 == coordinate[1]%2) ? bgBlack : bgWhite}`}>
+        <div className={`aspect-square relative ${(coordinate[0]%2 == coordinate[1]%2) ? bgBlack : bgWhite}`}>
             {
                 piece.active && 
                 <div className={`h-full w-full flex items-center justify-center select-none ${playersTurn ? "cursor-pointer" : "cursor-not-allowed"}`}>
-                    <img src={`./assets/chess-pieces/${piece.type}-${piece.color}.svg`} className="w-4/5 aspect-square" />
+                    <img src={`./assets/chess-pieces/${piece.type}-${piece.color}.svg`} className="w-4/5 aspect-square z-100" />
                 </div>
+            }
+            {
+                squareInvolvedInLastMove && <div className={`absolute inset-0 opacity-50 ${bgSelected} h-full w-full`}></div>
             }
         </div>
     );
