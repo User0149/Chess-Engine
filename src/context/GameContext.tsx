@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { type BoardState, type File, type GameProgress, type GameState, type Move, type Piece, type PieceType, type PlayerColor, type PossibleMove, type Rank, type Square, type StateSetter } from "../types/types";
 
 import { squareToCoord } from "../utils/coordinateConverter";
-import { toBoardState, toPieceVectorVector, toRecordStringNumber, toStringIntMap } from "../utils/jsEmbindConverter";
+import { toEngineGameState, toJSPossibleMove } from "../utils/jsEmbindConverter";
 
 import { EngineContext } from "./EngineContext";
 
@@ -19,6 +19,7 @@ interface IGameContext {
 
     resetGame: () => void;
     playAs: (color: PlayerColor) => void;
+    makeMove: (possibleMove: PossibleMove) => void;
 }
 
 interface GameContextProviderProps {
@@ -38,7 +39,7 @@ export const GameContext = createContext<IGameContext>({
     lastMove: {
         source: { file: "a", rank: "1" },
         dest: { file: "a", rank: "1" },
-        newPiece: "pawn"
+        newPieceType: "pawn"
     },
 
     setGameProgress: () => {},
@@ -46,7 +47,8 @@ export const GameContext = createContext<IGameContext>({
     setGameState: () => {},
 
     resetGame: () => {},
-    playAs: () => {}
+    playAs: () => {},
+    makeMove: () => {}
 });
 
 export default function GameContextProvider({ children }: GameContextProviderProps) {
@@ -56,7 +58,7 @@ export default function GameContextProvider({ children }: GameContextProviderPro
     const [lastMove, setLastMove] = useState<Move>({
         source: { file: "a", rank: "1" },
         dest: { file: "a", rank: "1" },
-        newPiece: "pawn"
+        newPieceType: "pawn"
     });
 
     const engine: any = useContext(EngineContext);
@@ -92,7 +94,7 @@ export default function GameContextProvider({ children }: GameContextProviderPro
                 for (const color of colors) {
                     const rank = initialPieceRanks[color];
 
-                    const square: Square = {file, rank};
+                    const square: Square = { file, rank };
                     const coord = squareToCoord(square);
                     initialBoard[coord[0]][coord[1]] = {
                         active: true,
@@ -117,7 +119,7 @@ export default function GameContextProvider({ children }: GameContextProviderPro
             for (const color of colors) {
                 const rank = initialPawnRanks[color];
 
-                const square: Square = {file, rank};
+                const square: Square = { file, rank };
                 const coord = squareToCoord(square);
                 initialBoard[coord[0]][coord[1]] = {
                     active: true,
@@ -143,23 +145,14 @@ export default function GameContextProvider({ children }: GameContextProviderPro
 
     useEffect(() => {
         if (gameProgress == "in progress" && gameState.toMove !== playerColor) { // do computer's move
-            console.log("Making computer move");
-            const computerMove: PossibleMove = engine.randomMove({
-                ...gameState,
-                previousStates: toStringIntMap(engine, gameState.previousStates),
-                boardState: toPieceVectorVector(engine, gameState.boardState)
-            });
-            makeMove(computerMove);
+            const computerMove = engine.randomMove(toEngineGameState(engine, gameState));
+            makeMove(toJSPossibleMove(computerMove));
         }
     }, [gameState, gameProgress]);
 
-    const makeMove = (move: PossibleMove) => {
-        setGameState({
-            ...move.gameState,
-            previousStates: toRecordStringNumber(move.gameState.previousStates),
-            boardState: toBoardState(move.gameState.boardState)
-        });
-        setLastMove(move.move);
+    const makeMove = (possibleMove: PossibleMove) => {
+        setGameState(possibleMove.gameState);
+        setLastMove(possibleMove.move);
     }
 
     const resetGame = () => {
@@ -190,7 +183,8 @@ export default function GameContextProvider({ children }: GameContextProviderPro
         setGameState,
 
         resetGame,
-        playAs
+        playAs,
+        makeMove
     };
 
     return (

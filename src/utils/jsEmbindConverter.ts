@@ -1,4 +1,4 @@
-import type { BoardState, Piece } from "../types/types";
+import type { BoardState, GameState, Piece, PossibleMove } from "../types/types";
 
 export function toStringIntMap(engine: any, obj: Record<string, number>) {
     const map = new engine.StringIntMap();
@@ -9,9 +9,12 @@ export function toStringIntMap(engine: any, obj: Record<string, number>) {
 }
 
 export function toRecordStringNumber(map: any): Record<string, number> {
+    const mapKeys = map.keys();
+
     const obj: Record<string, number>  = {};
-    for (const k in map) {
-        obj[k] = map[k];
+    for (let i = 0; i < mapKeys.size(); i++) {
+        const key = mapKeys.get(i);
+        obj[key] = map.get(key);
     }
     return obj;
 }
@@ -31,7 +34,7 @@ export function toPieceVectorVector(engine: any, boardState: BoardState) {
     return embindBoard;
 }
 
-export function toBoardState(pieceVectorVector: any) {
+export function toBoardState(pieceVectorVector: any): BoardState {
     const boardState: BoardState = [];
 
     for (let row = 0; row <= 7; row++) {
@@ -44,4 +47,27 @@ export function toBoardState(pieceVectorVector: any) {
     }
 
     return boardState;
+}
+
+export function toEngineGameState(engine: any, gameState: GameState) {
+    return ({
+        ...gameState,
+        previousStates: toStringIntMap(engine, gameState.previousStates),
+        boardState: toPieceVectorVector(engine, gameState.boardState)
+    });
+}
+
+export function toJSGameState(gameState: any): GameState {
+    return ({
+        ...gameState,
+        previousStates: toRecordStringNumber(gameState.previousStates),
+        boardState: toBoardState(gameState.boardState)
+    });
+}
+
+export function toJSPossibleMove(possibleMove: any): PossibleMove {
+    return ({
+        move: possibleMove.move,
+        gameState: toJSGameState(possibleMove.gameState)
+    });
 }

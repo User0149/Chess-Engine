@@ -1,23 +1,15 @@
 import type { GameState, PieceType, PlayerColor } from "../types/types";
 
-import { toPieceVectorVector, toStringIntMap } from "../utils/jsEmbindConverter";
+import { toEngineGameState } from "../utils/jsEmbindConverter";
 
 function isCheckmate(engine: any, gameState: GameState) {
     if (!engine.isCheckmate) return false;
-    return engine.isCheckmate({
-        ...gameState,
-        previousStates: toStringIntMap(engine, gameState.previousStates),
-        boardState: toPieceVectorVector(engine, gameState.boardState)
-    });
+    return engine.isCheckmate(toEngineGameState(engine, gameState));
 }
 
 function isStalemate(engine: any, gameState: GameState) {
     if (!engine.isStalemate) return false;
-    return engine.isStalemate({
-        ...gameState,
-        previousStates: toStringIntMap(engine, gameState.previousStates),
-        boardState: toPieceVectorVector(engine, gameState.boardState)
-    });
+    return engine.isStalemate(toEngineGameState(engine, gameState));
 }
 
 function threefoldRepetition(gameState: GameState) {

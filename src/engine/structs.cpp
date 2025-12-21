@@ -47,6 +47,7 @@ std::string GameState::hash() { // TODO: this hash doesn't take into account en 
 }
 
 EMSCRIPTEN_BINDINGS(structs) {
+    register_vector<std::string>("StringVector");
     register_vector<Piece>("PieceVector");
     register_vector<std::vector<Piece>>("PieceVectorVector");
     register_map<std::string, int>("StringIntMap");
@@ -62,7 +63,7 @@ EMSCRIPTEN_BINDINGS(structs) {
     value_object<Move>("Move")
         .field("source", &Move::source)
         .field("dest", &Move::dest)
-        .field("newPiece", &Move::new_piece)
+        .field("newPieceType", &Move::new_piece_type)
         ;
     value_object<Piece>("Piece")
         .field("active", &Piece::active)

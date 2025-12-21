@@ -287,5 +287,6 @@ std::vector<PossibleMove> possible_moves(const GameState &game_state) {
 }
 
 EMSCRIPTEN_BINDINGS(possible_moves_lib) {
+    register_vector<PossibleMove>("PossibleMoveVector");
     function("possibleMoves", &possible_moves);
 }
