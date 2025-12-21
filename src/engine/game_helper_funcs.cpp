@@ -36,15 +36,18 @@ bool is_targeted(const GameState &game_state, Square test_square) {
                             }
                             
                             Piece dest_piece = game_state.board_state[dest_i][dest_j];
-                            if (!dest_piece.active || dest_piece.color == game_state.to_move) { // opponent piece targets this square
-                                Square dest_square = coord_to_square({dest_i, dest_j});
-                                if (test_square.file == dest_square.file && test_square.rank == dest_square.rank) {
-                                    return true;
-                                }
+                            if (dest_piece.active && dest_piece.color != game_state.to_move) { // can't move past a friendly piece
+                                break;
+                            }
 
-                                if (dest_piece.color == game_state.to_move) { // we are on this square, so opponent can't move any further
-                                    break;
-                                }
+                            // opponent piece targets this square
+                            Square dest_square = coord_to_square({dest_i, dest_j});
+                            if (test_square.file == dest_square.file && test_square.rank == dest_square.rank) {
+                                return true;
+                            }
+
+                            if (dest_piece.active &&  dest_piece.color == game_state.to_move) { // we are on this square, so opponent can't move any further
+                                break;
                             }
                         }
                     }

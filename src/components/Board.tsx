@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import type { Coordinate, File, PieceType, PossibleMove, Rank, Square } from "../types/types";
+import type { File, PossibleMove, Rank, Square } from "../types/types";
 
 import { squareToCoord } from "../utils/coordinateConverter";
 import { toEngineGameState, toJSPossibleMove } from "../utils/jsEmbindConverter";
@@ -29,8 +29,6 @@ function BoardSquare({ file, rank }: BoardSquareProps) {
         e.preventDefault();
 
         const source: Square = JSON.parse(e.dataTransfer.getData("source"));
-        const sourceCoord: Coordinate = squareToCoord(source);
-        const sourcePieceType: PieceType = gameState.boardState[sourceCoord[0]][sourceCoord[1]].type;
 
         const dest: Square = { file, rank };
         

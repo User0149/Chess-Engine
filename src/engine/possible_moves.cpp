@@ -2,6 +2,8 @@
 #include "game_helper_funcs.h"
 #include "utils.h"
 
+#include <iostream>
+
 using namespace emscripten;
 
 // non-castling and non-pawn moves
@@ -30,7 +32,6 @@ std::vector<PossibleMove> normal_piece_moves(const GameState &game_state, Piece 
             GameState new_game_state = game_state;
 
             new_game_state.moves = game_state.moves + 1;
-            new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
             if (dest_piece.active && dest_piece.color != game_state.to_move) {
                 new_game_state.last_capture_or_pawn_move = game_state.moves + 1;
             }
@@ -44,11 +45,13 @@ std::vector<PossibleMove> normal_piece_moves(const GameState &game_state, Piece 
             new_game_state.previous_states[new_game_state.hash()]++;
 
             if (!is_targeted(new_game_state, king_square(new_game_state))) { // we don't put our king in check, so this move is valid
+                new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
+
                 Move move = {square, coord_to_square({dest_i, dest_j}), piece.type};
                 allowed_moves.push_back({move, new_game_state});
             }
 
-            if (dest_piece.color != game_state.to_move) { // opponent was on this square, so we can't move any further
+            if (dest_piece.active && dest_piece.color != game_state.to_move) { // opponent is on this square, so we can't move any further
                 break;
             }
         }
@@ -90,7 +93,6 @@ std::vector<PossibleMove> castling_moves(const GameState &game_state, Piece king
                 GameState new_game_state = game_state;
 
                 new_game_state.moves = game_state.moves + 1;
-                new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
                 new_game_state.last_capture_or_pawn_move = game_state.last_capture_or_pawn_move; // castling is not a capture nor a pawn move
 
                 // move king
@@ -108,6 +110,8 @@ std::vector<PossibleMove> castling_moves(const GameState &game_state, Piece king
                 new_game_state.previous_states[new_game_state.hash()]++;
 
                 if (!is_targeted(new_game_state, king_square(new_game_state))) { // i don't see how our king can be targeted if it doesn't step through targeted squares but let's include this check anyway
+                    new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
+
                     Move move = {king_pos_square, king_dest_square, "king"};
                     allowed_moves.push_back({move, new_game_state});
                 }
@@ -168,7 +172,6 @@ std::vector<PossibleMove> pawn_non_en_passant_moves(const GameState &game_state,
             GameState new_game_state = game_state;
 
             new_game_state.moves = game_state.moves + 1;
-            new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
             new_game_state.last_capture_or_pawn_move = game_state.moves + 1;
 
             
@@ -182,6 +185,8 @@ std::vector<PossibleMove> pawn_non_en_passant_moves(const GameState &game_state,
             new_game_state.previous_states[new_game_state.hash()]++;
 
             if (!is_targeted(new_game_state, king_square(new_game_state))) { // we don't put our king in check, so this move is valid
+                new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
+
                 Move move = {pawn_square, dest_square, new_piece_type};
                 allowed_moves.push_back({move, new_game_state});
             }
@@ -216,7 +221,6 @@ std::vector<PossibleMove> pawn_en_passant_moves(const GameState &game_state, Pie
                     GameState new_game_state = game_state;
 
                     new_game_state.moves = game_state.moves + 1;
-                    new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
                     new_game_state.last_capture_or_pawn_move = game_state.moves + 1;
 
                     // move pawn
@@ -231,6 +235,7 @@ std::vector<PossibleMove> pawn_en_passant_moves(const GameState &game_state, Pie
                     new_game_state.previous_states[new_game_state.hash()]++;
 
                     if (!is_targeted(new_game_state, king_square(new_game_state))) { // we don't put our king in check, so this move is valid
+                        new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
                         Move move = {pawn_square, coord_to_square(dest_coord), "pawn"};
                         allowed_moves.push_back({move, new_game_state});
                     }

@@ -144,9 +144,16 @@ export default function GameContextProvider({ children }: GameContextProviderPro
     });
 
     useEffect(() => {
-        if (gameProgress == "in progress" && gameState.toMove !== playerColor) { // do computer's move
-            const computerMove = engine.randomMove(toEngineGameState(engine, gameState));
-            makeMove(toJSPossibleMove(computerMove));
+        if (gameProgress === "in progress") {
+            if(engine.isCheckmate(toEngineGameState(engine, gameState)) || engine.isStalemate(toEngineGameState(engine, gameState))) {
+                setGameProgress("finished");
+                return;
+            }
+
+            if (gameState.toMove !== playerColor) { // do computer's move
+                const computerMove = engine.randomMove(toEngineGameState(engine, gameState));
+                makeMove(toJSPossibleMove(computerMove));
+            }
         }
     }, [gameState, gameProgress]);
 
