@@ -47,9 +47,9 @@ function insufficientMaterial(gameState: GameState): boolean {
         return materialCount;
     };
 
-    const { whiteMaterial , blackMaterial} = material();
-    const whiteMaterialWithoutKing = whiteMaterial.filter(piece => piece !== "king");
-    const blackMaterialWithoutKing = blackMaterial.filter(piece => piece !== "king");
+    const { whiteMaterial , blackMaterial } = material();
+    const whiteMaterialWithoutKing = whiteMaterial.filter(pieceType => pieceType !== "king");
+    const blackMaterialWithoutKing = blackMaterial.filter(pieceType => pieceType !== "king");
 
     const minMaterial = (whiteMaterialWithoutKing.length < blackMaterialWithoutKing.length ? whiteMaterialWithoutKing : blackMaterialWithoutKing);
     const maxMaterial = (whiteMaterialWithoutKing.length < blackMaterialWithoutKing.length ? blackMaterialWithoutKing : whiteMaterialWithoutKing);
@@ -73,7 +73,11 @@ function insufficientMaterial(gameState: GameState): boolean {
     }
 }
 
-export function gameResult(gameState: GameState, playerColor: PlayerColor, engine: any) {
+export function isGameOver(engine: any, gameState: GameState) {
+    return isCheckmate(engine, gameState) || isStalemate(engine, gameState) || threefoldRepetition(gameState) || fiftyMoveRule(gameState) || insufficientMaterial(gameState);
+}
+
+export function gameResult(engine: any, gameState: GameState, playerColor: PlayerColor) {
     if (isCheckmate(engine, gameState)) {
         return `${gameState.toMove === playerColor ? "Computer" : "You"} won by checkmate.`;
     }

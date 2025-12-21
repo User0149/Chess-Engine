@@ -38,7 +38,7 @@ function GameResult() {
 
     return (
         <div className="text-center text-4xl">
-            {gameResult(gameState, playerColor, engine)}
+            {gameResult(engine, gameState, playerColor)}
         </div>
     );
 }

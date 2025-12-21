@@ -6,6 +6,7 @@ import { squareToCoord } from "../utils/coordinateConverter";
 import { toEngineGameState, toJSPossibleMove } from "../utils/jsEmbindConverter";
 
 import { EngineContext } from "./EngineContext";
+import { isGameOver } from "../lib/gameInfo";
 
 interface IGameContext {
     gameProgress: GameProgress;
@@ -145,7 +146,7 @@ export default function GameContextProvider({ children }: GameContextProviderPro
 
     useEffect(() => {
         if (gameProgress === "in progress") {
-            if(engine.isCheckmate(toEngineGameState(engine, gameState)) || engine.isStalemate(toEngineGameState(engine, gameState))) {
+            if (isGameOver(engine, gameState)) {
                 setGameProgress("finished");
                 return;
             }
