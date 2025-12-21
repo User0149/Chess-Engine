@@ -2,8 +2,6 @@
 #include "game_helper_funcs.h"
 #include "utils.h"
 
-#include <iostream>
-
 using namespace emscripten;
 
 // non-castling and non-pawn moves
@@ -69,12 +67,12 @@ std::vector<PossibleMove> castling_moves(const GameState &game_state, Piece king
         Coordinate rook_square_coord = square_to_coord({std::string(1, rook_file), king_pos_square.rank});
         Piece rook_square_piece = game_state.board_state[rook_square_coord.i][rook_square_coord.j];
 
-        Square king_dest_square = {std::string(1, rook_file == 'a' ? 'c': 'g'), king_pos_square.rank};
+        Square king_dest_square = {(rook_file == 'a' ? "c": "g"), king_pos_square.rank};
         Coordinate king_dest_coord = square_to_coord(king_dest_square);
         
         if (rook_square_piece.active && rook_square_piece.last_move_index == 0) { // rook hasn't moved: try castling
 
-            bool can_castle = is_targeted(game_state, king_pos_square);
+            bool can_castle = !is_targeted(game_state, king_pos_square);
             for (char file = std::min(rook_file, 'e') + 1; file <= std::max(rook_file, 'e') - 1; file++) { // check for pieces blocking the castling path
                 Square in_between_square = {std::string(1, file), king_pos_square.rank};
                 Coordinate in_between_coord = square_to_coord(in_between_square);
