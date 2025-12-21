@@ -30,16 +30,18 @@ function insufficientMaterial(gameState: GameState): boolean {
         for (let i = 0; i <= 7; i++) {
             for (let j = 0; j <= 7; j++) {
                 const piece = gameState.boardState[i][j];
-                const color = piece.color;
+                if (piece.active) {
+                    const color = piece.color;
 
-                const squareColor = (i%2 == j%2 ? "light" : "dark");
-                const pieceType: Exclude<PieceType, "bishop"> | "light bishop" | "dark bishop" = (piece.type === "bishop" ? (squareColor == "light" ? "light bishop" : "dark bishop"): piece.type);
+                    const squareColor = (i%2 == j%2 ? "light" : "dark");
+                    const pieceType: Exclude<PieceType, "bishop"> | "light bishop" | "dark bishop" = (piece.type === "bishop" ? (squareColor == "light" ? "light bishop" : "dark bishop"): piece.type);
 
-                if (color === "white") {
-                    materialCount.whiteMaterial.push(pieceType);
-                }
-                else {
-                    materialCount.blackMaterial.push(pieceType);
+                    if (color === "white") {
+                        materialCount.whiteMaterial.push(pieceType);
+                    }
+                    else {
+                        materialCount.blackMaterial.push(pieceType);
+                    }
                 }
             }
         }
