@@ -183,6 +183,7 @@ export default function GameContextProvider({ children }: GameContextProviderPro
             toMove: "white",
             boardState: initialBoardState()
         });
+        setSelectedSquare(null);
     };
 
     const playAs = (color: PlayerColor) => {

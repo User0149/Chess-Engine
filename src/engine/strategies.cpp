@@ -4,6 +4,7 @@
 
 #include "strategies.h"
 #include "possible_moves.h"
+#include "game_helper_funcs.h"
 
 using namespace emscripten;
 
@@ -14,6 +15,13 @@ PossibleMove random_move(const GameState &game_state) {
 
 // evaluates how much advantage the player to move has
 double eval(const GameState& game_state, const int depth) {
+    if (is_checkmate(game_state)) {
+        return -INFINITY;
+    }
+    if (is_stalemate(game_state)) {
+        return 0.0;
+    }
+
     if (depth == 0) { // base case: simply count material advantage on the board
         return game_state.eval();
     }
