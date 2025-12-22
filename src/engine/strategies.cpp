@@ -1,7 +1,5 @@
 #include <emscripten/bind.h>
 
-#include <chrono>
-#include <random>
 #include <algorithm>
 
 #include "strategies.h"
@@ -10,10 +8,8 @@
 using namespace emscripten;
 
 PossibleMove random_move(const GameState &game_state) {
-    static std::mt19937 rng(time(0));
     std::vector<PossibleMove> next_moves = possible_moves(game_state);
-    
-    return next_moves[int(rng()%((int)next_moves.size()))];
+    return next_moves[0];
 }
 
 // evaluates how much advantage the player to move has
@@ -34,10 +30,6 @@ double eval(const GameState& game_state, const int depth) {
 
 PossibleMove minimax_move(const GameState &game_state, const int depth) {
     std::vector<PossibleMove> next_moves = possible_moves(game_state);
-
-    // randomise first moves
-    static std::mt19937 rng(time(0));
-    std::shuffle(next_moves.begin(), next_moves.end(), rng);
 
     // play the move that minimises opponent's advantage
     return *std::min_element(next_moves.begin(), next_moves.end(), [depth](const PossibleMove a, const PossibleMove b){

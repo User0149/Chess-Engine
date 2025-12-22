@@ -1,4 +1,8 @@
 #include <emscripten/bind.h>
+
+#include <chrono>
+#include <random>
+
 #include "game_helper_funcs.h"
 #include "utils.h"
 
@@ -285,6 +289,10 @@ std::vector<PossibleMove> possible_moves(const GameState &game_state) {
             }
         }
     }
+
+    // randomise moves
+    static std::mt19937 rng(time(0));
+    std::shuffle(allowed_moves.begin(), allowed_moves.end(), rng);
 
     return allowed_moves;
 }
