@@ -1,4 +1,5 @@
 #include <emscripten/bind.h>
+
 #include "game_helper_funcs.h"
 #include "possible_moves.h"
 #include "utils.h"

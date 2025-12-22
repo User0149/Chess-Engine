@@ -1,9 +1,10 @@
 #include <emscripten/bind.h>
+
 #include "structs.h"
 
 using namespace emscripten;
 
-double Piece::value() {
+double Piece::value() const {
     if (type == "pawn") return 1.0;
     if (type == "knight") return 3.0;
     if (type == "bishop") return 3.0;
@@ -13,7 +14,7 @@ double Piece::value() {
     return 0.0;
 }
 
-int Piece::attack_range() {
+int Piece::attack_range() const {
     if (type == "pawn") return 1;
     if (type == "knight") return 1;
     if (type == "bishop") return 8;
@@ -23,7 +24,7 @@ int Piece::attack_range() {
     return 0.0;
 }
 
-std::vector<Coordinate> Piece::attack_directions() {
+std::vector<Coordinate> Piece::attack_directions() const {
     if (type == "pawn") return {};
     if (type == "knight") return {{1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
     if (type == "bishop") return {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
@@ -33,7 +34,7 @@ std::vector<Coordinate> Piece::attack_directions() {
     return {};
 }
 
-std::string GameState::hash() { // TODO: this hash doesn't take into account en passant and castling rights when hashing the state
+std::string GameState::hash() const { // TODO: this hash doesn't take into account en passant and castling rights when hashing the state
     std::string position_string;
     for (int i = 0; i <= 7; i++) {
         for (int j = 0; j <= 7; j++) {
@@ -44,6 +45,26 @@ std::string GameState::hash() { // TODO: this hash doesn't take into account en 
 
     std::string state = to_move + position_string;
     return std::to_string(std::hash<std::string>{}(state));
+}
+
+double GameState::eval() const {
+    double advantage = 0.0;
+    
+    for (int i = 0; i <= 7; i++) {
+        for (int j = 0; j <= 7; j++) {
+            Piece piece = board_state[i][j];
+            if (piece.active) {
+                if (piece.color == to_move) {
+                    advantage += piece.value();
+                }
+                else {
+                    advantage -= piece.value();
+                }
+            }
+        }
+    }
+
+    return advantage;
 }
 
 EMSCRIPTEN_BINDINGS(structs) {

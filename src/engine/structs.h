@@ -30,11 +30,10 @@ struct Piece {
     int moves = 0;
     int last_move_index = 0;
 
-    double value();
+    double value() const;
 
-    int attack_range();
-
-    std::vector<Coordinate> attack_directions();
+    int attack_range() const;
+    std::vector<Coordinate> attack_directions() const;
 };
 
 struct GameState {
@@ -54,7 +53,8 @@ struct GameState {
         board_state = _board_state;
     }
 
-    std::string hash();
+    std::string hash() const;
+    double eval() const;
 };
 
 struct PossibleMove {
