@@ -10,8 +10,8 @@ using namespace emscripten;
 
 // evaluates how much advantage the player to move has
 double eval(const GameState& game_state, const int depth) {
-    const double MOBILITY_FACTOR = 0.01;
-    const double CASTLING_FACTOR = 0.1;
+    const double MOBILITY_FACTOR = 0.005;
+    const double CASTLING_FACTOR = 0.05;
 
     if (is_checkmate(game_state)) {
         return -INFINITY;
