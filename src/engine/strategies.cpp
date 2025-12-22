@@ -50,7 +50,7 @@ PossibleMove greedy_move(const GameState &game_state) {
 }
 
 PossibleMove computer_move(const GameState &game_state) {
-    const int DEPTH = 2;
+    const int DEPTH = 3;
     return minimax_move(game_state, DEPTH);
 }
 
