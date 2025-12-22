@@ -10,6 +10,10 @@ interface EngineContextProviderProps {
 export const EngineContext = createContext({
     isCheckmate: null,
     isStalemate: null,
+    threefoldRepetition: null,
+    fiftyMoveRule: null,
+    insufficientMaterial: null,
+
     possibleMoves: null,
     computerMove: null
 });
@@ -18,6 +22,10 @@ export default function EngineContextProvider({ children }: EngineContextProvide
     const [engine, setEngine] = useState({
         isCheckmate: null,
         isStalemate: null,
+        threefoldRepetition: null,
+        fiftyMoveRule: null,
+        insufficientMaterial: null,
+
         possibleMoves: null,
         computerMove: null
     });

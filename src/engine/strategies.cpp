@@ -13,7 +13,7 @@ double eval(const GameState& game_state, const int depth) {
     if (is_checkmate(game_state)) {
         return -INFINITY;
     }
-    if (is_stalemate(game_state)) {
+    if (is_stalemate(game_state) || threefold_repetition(game_state) || fifty_move_rule(game_state) || insufficient_material(game_state)) {
         return 0.0;
     }
 

@@ -1,5 +1,7 @@
 #include <emscripten/bind.h>
 
+#include <algorithm>
+
 #include "game_helper_funcs.h"
 #include "utils.h"
 #include "possible_moves.h"
@@ -105,6 +107,66 @@ bool is_stalemate(const GameState &game_state) {
 
 bool is_checkmate(const GameState &game_state) {
     return is_targeted(game_state, king_square(game_state)) && no_moves_left(game_state);
+}
+
+bool threefold_repetition(const GameState &game_state) {
+    for (auto [state, freq]:game_state.previous_states) {
+        if (freq >= 3) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool fifty_move_rule(const GameState &game_state) {
+    return game_state.moves - game_state.last_capture_or_pawn_move >= 100;
+}
+
+bool insufficient_material(const GameState &game_state) {
+    std::vector<std::string> white_material;
+    std::vector<std::string> black_material;
+    for (int i = 0; i <= 7; i++) {
+        for (int j = 0; j <= 7; j++) {
+            Piece piece = game_state.board_state[i][j];
+            if (piece.active) {
+                std::string color = piece.color;
+
+                std::string square_color = (i % 2 == j % 2 ? "light" : "dark");
+                std::string piece_type = (piece.type == "bishop" ? (square_color == "light" ? "light bishop" : "dark bishop") : piece.type);
+
+                if (color == "white") {
+                    white_material.push_back(piece_type);
+                }
+                else {
+                    black_material.push_back(piece_type);
+                }
+            }
+        }
+    }
+
+    white_material.erase(std::find(white_material.begin(), white_material.end(), "king"));
+    black_material.erase(std::find(black_material.begin(), black_material.end(), "king"));
+
+    std::vector<std::string> minMaterial = (white_material.size() < black_material.size() ? white_material : black_material);
+    std::vector<std::string> maxMaterial = (white_material.size() < black_material.size() ? black_material : white_material);
+
+    if (minMaterial.size() == 0) { // lone king
+        if (maxMaterial.size() == 0) { // two lone kings
+            return true;
+        }
+        else if (maxMaterial.size() == 1) { // lone king vs king + bishop/knight
+            return maxMaterial[0] == "dark bishop" || maxMaterial[0] == "light bishop" || maxMaterial[0] == "knight";
+        }
+        else { // lone king vs >=2 non-king pieces
+            return false;
+        }
+    }
+    else if (minMaterial.size() == 1 && maxMaterial.size() == 1){ // check for king + bishop vs king + bishop with same-coloured bishops
+        return (minMaterial[0] == "dark bishop" && maxMaterial[0] == "dark bishop") || (minMaterial[0] == "light bishop" && maxMaterial[0] == "light bishop");
+    }
+    else {
+        return false;
+    }
 }
 
 EMSCRIPTEN_BINDINGS(game_helper_funcs) {
