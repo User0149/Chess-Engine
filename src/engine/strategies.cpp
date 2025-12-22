@@ -36,7 +36,7 @@ PossibleMove random_move(const GameState &game_state) {
     return next_moves[0];
 }
 
-PossibleMove minimax_move(const GameState &game_state, const int depth) {
+PossibleMove negamax_move(const GameState &game_state, const int depth) {
     std::vector<PossibleMove> next_moves = possible_moves(game_state);
 
     // play the move that minimises opponent's advantage
@@ -46,12 +46,12 @@ PossibleMove minimax_move(const GameState &game_state, const int depth) {
 }
 
 PossibleMove greedy_move(const GameState &game_state) {
-    return minimax_move(game_state, 1);
+    return negamax_move(game_state, 1);
 }
 
 PossibleMove computer_move(const GameState &game_state) {
     const int DEPTH = 3;
-    return minimax_move(game_state, DEPTH);
+    return negamax_move(game_state, DEPTH);
 }
 
 EMSCRIPTEN_BINDINGS(strategies) {
