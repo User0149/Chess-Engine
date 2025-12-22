@@ -28,6 +28,10 @@ double eval(const GameState& game_state, const int depth) {
 PossibleMove minimax_move(const GameState &game_state, const int depth) {
     std::vector<PossibleMove> moves = possible_moves(game_state);
 
+    // randomise first moves
+    static std::mt19937 rng(time(0));
+    std::shuffle(moves.begin(), moves.end(), rng);
+
     // play the move that minimises opponent's advantage
     return *std::min_element(moves.begin(), moves.end(), [depth](const PossibleMove a, const PossibleMove b){
         return eval(a.game_state, depth - 1) < eval(b.game_state, depth - 1);

@@ -2940,6 +2940,8 @@ async function createWasm() {
       __emval_decref(handle);
     };
 
+  var _emscripten_date_now = () => Date.now();
+
   var getHeapMax = () =>
       // Stay one Wasm page short of 4GB: while e.g. Chrome is able to allocate
       // full 4GB Wasm memories, the size will wrap back to 0 bytes in Wasm side
@@ -3727,6 +3729,8 @@ var wasmImports = {
   _emval_invoke: __emval_invoke,
   /** @export */
   _emval_run_destructors: __emval_run_destructors,
+  /** @export */
+  emscripten_date_now: _emscripten_date_now,
   /** @export */
   emscripten_resize_heap: _emscripten_resize_heap,
   /** @export */
