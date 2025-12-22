@@ -8,11 +8,12 @@
 
 using namespace emscripten;
 
+const int DEPTH = 3;
+const double MOBILITY_FACTOR = 0.005;
+const double CASTLING_FACTOR = 0.1;
+
 // evaluates how much advantage the player to move has
 double eval(const GameState& game_state, const int depth, double alpha = -INFINITY) {
-    const double MOBILITY_FACTOR = 0.005;
-    const double CASTLING_FACTOR = 0.05;
-
     if (is_checkmate(game_state)) {
         return -INFINITY;
     }
@@ -55,9 +56,6 @@ PossibleMove random_move(const GameState &game_state) {
 }
 
 PossibleMove negamax_move(const GameState &game_state, const int depth) {
-    const double MOBILITY_FACTOR = 0.005;
-    const double CASTLING_FACTOR = 0.05;
-
     std::vector<PossibleMove> next_moves = possible_moves(game_state);
 
     GameState opp_game_state = game_state;
@@ -89,7 +87,6 @@ PossibleMove greedy_move(const GameState &game_state) {
 }
 
 PossibleMove computer_move(const GameState &game_state) {
-    const int DEPTH = 3;
     return negamax_move(game_state, DEPTH);
 }
 
