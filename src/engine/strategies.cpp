@@ -17,7 +17,7 @@ double eval(const GameState& game_state, const int depth) {
         return 0.0;
     }
 
-    if (depth == 0) { // base case: simply count material advantage on the board
+    if (depth <= 0) { // base case: simply count material advantage on the board
         return game_state.eval();
     }
 
