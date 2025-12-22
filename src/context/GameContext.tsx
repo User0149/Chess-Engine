@@ -38,6 +38,8 @@ export const GameContext = createContext<IGameContext>({
         previousStates: {},
         lastCaptureOrPawnMove: 0,
         toMove: "white",
+        hasCastledWhite: false,
+        hasCastledBlack: false,
         boardState: [[]]
     },
     lastMove: {
@@ -148,6 +150,8 @@ export default function GameContextProvider({ children }: GameContextProviderPro
         previousStates: {},
         lastCaptureOrPawnMove: 0,
         toMove: "white",
+        hasCastledWhite: false,
+        hasCastledBlack: false,
         boardState: initialBoardState()
     });
 
@@ -181,6 +185,8 @@ export default function GameContextProvider({ children }: GameContextProviderPro
             previousStates: {},
             lastCaptureOrPawnMove: 0,
             toMove: "white",
+            hasCastledWhite: false,
+            hasCastledBlack: false,
             boardState: initialBoardState()
         });
         setSelectedSquare(null);

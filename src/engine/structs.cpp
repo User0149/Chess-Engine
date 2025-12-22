@@ -98,6 +98,8 @@ EMSCRIPTEN_BINDINGS(structs) {
         .field("previousStates", &GameState::previous_states)
         .field("lastCaptureOrPawnMove", &GameState::last_capture_or_pawn_move)
         .field("toMove", &GameState::to_move)
+        .field("hasCastledWhite", &GameState::has_castled_white)
+        .field("hasCastledBlack", &GameState::has_castled_black)
         .field("boardState", &GameState::board_state)
         ;
     value_object<PossibleMove>("PossibleMove")

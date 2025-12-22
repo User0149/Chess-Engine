@@ -95,6 +95,7 @@ std::vector<PossibleMove> castling_moves(const GameState &game_state, Piece king
                 GameState new_game_state = game_state;
 
                 new_game_state.moves = game_state.moves + 1;
+                (game_state.to_move == "white" ? new_game_state.has_castled_white : new_game_state.has_castled_black) = true;
                 new_game_state.last_capture_or_pawn_move = game_state.last_capture_or_pawn_move; // castling is not a capture nor a pawn move
 
                 // move king

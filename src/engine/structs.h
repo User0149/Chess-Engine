@@ -42,6 +42,9 @@ struct GameState {
     int last_capture_or_pawn_move = 0;
     std::string to_move = "white";
 
+    bool has_castled_white = false;
+    bool has_castled_black = false;
+
     std::vector<std::vector<Piece>> board_state = std::vector<std::vector<Piece>>(8, std::vector<Piece>(8));
     
     GameState() = default;

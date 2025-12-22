@@ -11,6 +11,7 @@ using namespace emscripten;
 // evaluates how much advantage the player to move has
 double eval(const GameState& game_state, const int depth) {
     const double MOBILITY_FACTOR = 0.01;
+    const double CASTLING_FACTOR = 0.1;
 
     if (is_checkmate(game_state)) {
         return -INFINITY;
@@ -39,6 +40,9 @@ double eval(const GameState& game_state, const int depth) {
 
     advantage += MOBILITY_FACTOR * (player_moves - opponent_moves);
 
+    // consider castling
+    advantage += CASTLING_FACTOR * (game_state.has_castled_white - game_state.has_castled_black);
+
     return advantage;
 }
 
@@ -61,7 +65,7 @@ PossibleMove greedy_move(const GameState &game_state) {
 }
 
 PossibleMove computer_move(const GameState &game_state) {
-    const int DEPTH = 3;
+    const int DEPTH = 2;
     return negamax_move(game_state, DEPTH);
 }
 
