@@ -152,17 +152,20 @@ export default function GameContextProvider({ children }: GameContextProviderPro
     });
 
     useEffect(() => {
-        if (gameProgress === "in progress") {
-            if (isGameOver(engine, gameState)) {
-                setGameProgress("finished");
-                return;
-            }
+        // engine analysis must be async; we must display the player's move on the frontend immediately
+        setTimeout(() => {
+            if (gameProgress === "in progress") {
+                if (isGameOver(engine, gameState)) {
+                    setGameProgress("finished");
+                    return;
+                }
 
-            if (gameState.toMove !== playerColor) { // do computer's move
-                const computerMove = engine.computerMove(toEngineGameState(engine, gameState));
-                makeMove(toJSPossibleMove(computerMove));
+                if (gameState.toMove !== playerColor) { // do computer's move
+                    const computerMove = engine.computerMove(toEngineGameState(engine, gameState));
+                    makeMove(toJSPossibleMove(computerMove));
+                }
             }
-        }
+        }, 0);
     }, [gameState, gameProgress]);
 
     const makeMove = (possibleMove: PossibleMove) => {

@@ -11,9 +11,9 @@ using namespace emscripten;
 
 PossibleMove random_move(const GameState &game_state) {
     static std::mt19937 rng(time(0));
-    std::vector<PossibleMove> moves = possible_moves(game_state);
+    std::vector<PossibleMove> next_moves = possible_moves(game_state);
     
-    return moves[int(rng()%((int)moves.size()))];
+    return next_moves[int(rng()%((int)next_moves.size()))];
 }
 
 // evaluates how much advantage the player to move has
@@ -22,18 +22,25 @@ double eval(const GameState& game_state, const int depth) {
         return game_state.eval();
     }
 
-    return 0.0;
+    std::vector<PossibleMove> next_moves = possible_moves(game_state);
+
+    double advantage = -INFINITY;
+    for (PossibleMove move:next_moves) {
+        advantage = std::max(advantage, -eval(move.game_state, depth - 1));
+    }
+
+    return advantage;
 }
 
 PossibleMove minimax_move(const GameState &game_state, const int depth) {
-    std::vector<PossibleMove> moves = possible_moves(game_state);
+    std::vector<PossibleMove> next_moves = possible_moves(game_state);
 
     // randomise first moves
     static std::mt19937 rng(time(0));
-    std::shuffle(moves.begin(), moves.end(), rng);
+    std::shuffle(next_moves.begin(), next_moves.end(), rng);
 
     // play the move that minimises opponent's advantage
-    return *std::min_element(moves.begin(), moves.end(), [depth](const PossibleMove a, const PossibleMove b){
+    return *std::min_element(next_moves.begin(), next_moves.end(), [depth](const PossibleMove a, const PossibleMove b){
         return eval(a.game_state, depth - 1) < eval(b.game_state, depth - 1);
     });
 }
@@ -43,7 +50,8 @@ PossibleMove greedy_move(const GameState &game_state) {
 }
 
 PossibleMove computer_move(const GameState &game_state) {
-    return greedy_move(game_state);
+    const int DEPTH = 2;
+    return minimax_move(game_state, DEPTH);
 }
 
 EMSCRIPTEN_BINDINGS(strategies) {
