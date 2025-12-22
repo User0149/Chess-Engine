@@ -33,7 +33,7 @@ function insufficientMaterial(gameState: GameState): boolean {
                 if (piece.active) {
                     const color = piece.color;
 
-                    const squareColor = (i%2 == j%2 ? "light" : "dark");
+                    const squareColor = (i % 2 === j % 2 ? "light" : "dark");
                     const pieceType: Exclude<PieceType, "bishop"> | "light bishop" | "dark bishop" = (piece.type === "bishop" ? (squareColor == "light" ? "light bishop" : "dark bishop"): piece.type);
 
                     if (color === "white") {

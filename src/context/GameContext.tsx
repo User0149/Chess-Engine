@@ -5,18 +5,21 @@ import { type BoardState, type File, type GameProgress, type GameState, type Mov
 import { squareToCoord } from "../utils/coordinateConverter";
 import { toEngineGameState, toJSPossibleMove } from "../utils/jsEmbindConverter";
 
-import { EngineContext } from "./EngineContext";
 import { isGameOver } from "../lib/gameInfo";
+
+import { EngineContext } from "./EngineContext";
 
 interface IGameContext {
     gameProgress: GameProgress;
     playerColor: PlayerColor;
     gameState: GameState;
     lastMove: Move;
+    selectedSquare: Square | null;
 
     setGameProgress: StateSetter<GameProgress>;
     setPlayerColor: StateSetter<PlayerColor>;
     setGameState: StateSetter<GameState>;
+    setSelectedSquare: StateSetter<Square | null>;
 
     resetGame: () => void;
     playAs: (color: PlayerColor) => void;
@@ -42,10 +45,12 @@ export const GameContext = createContext<IGameContext>({
         dest: { file: "a", rank: "1" },
         newPieceType: "pawn"
     },
+    selectedSquare: null,
 
     setGameProgress: () => {},
     setPlayerColor: () => {},
     setGameState: () => {},
+    setSelectedSquare: () => {},
 
     resetGame: () => {},
     playAs: () => {},
@@ -61,6 +66,8 @@ export default function GameContextProvider({ children }: GameContextProviderPro
         dest: { file: "a", rank: "1" },
         newPieceType: "pawn"
     });
+
+    const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);
 
     const engine: any = useContext(EngineContext);
 
@@ -185,10 +192,12 @@ export default function GameContextProvider({ children }: GameContextProviderPro
         playerColor,
         gameState,
         lastMove,
+        selectedSquare,
 
         setGameProgress,
         setPlayerColor,
         setGameState,
+        setSelectedSquare,
 
         resetGame,
         playAs,
