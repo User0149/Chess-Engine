@@ -1,8 +1,8 @@
 #include <emscripten/bind.h>
 
 #include "game_helper_funcs.h"
-#include "possible_moves.h"
 #include "utils.h"
+#include "possible_moves.h"
 
 using namespace emscripten;
 
@@ -70,12 +70,41 @@ bool is_targeted(const GameState &game_state, Square test_square) {
     return false;
 }
 
+bool no_moves_left(const GameState &game_state) {
+    for (int i = 0; i <= 7; i++) {
+        for (int j = 0; j <= 7; j++) {
+            Piece piece = game_state.board_state[i][j];
+            Square square = coord_to_square({i, j});
+
+            if (piece.active && piece.color == game_state.to_move){ // brute force through all our pieces
+                if (piece.type != "pawn") {
+                    if (!normal_piece_moves(game_state, piece, square).empty()) {
+                        return false;
+                    }              
+                }
+                if (piece.type == "king" && piece.last_move_index == 0) { // king hasn't moved: check for castling
+                    if (!castling_moves(game_state, piece, square).empty()) {
+                        return false;
+                    }                    
+                }
+                if (piece.type == "pawn") {
+                    if (!pawn_moves(game_state, piece, square).empty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 bool is_stalemate(const GameState &game_state) {
-    return possible_moves(game_state).empty() && !is_targeted(game_state, king_square(game_state));
+    return !is_targeted(game_state, king_square(game_state)) && no_moves_left(game_state);
 }
 
 bool is_checkmate(const GameState &game_state) {
-    return possible_moves(game_state).empty() && is_targeted(game_state, king_square(game_state));
+    return is_targeted(game_state, king_square(game_state)) && no_moves_left(game_state);
 }
 
 EMSCRIPTEN_BINDINGS(game_helper_funcs) {

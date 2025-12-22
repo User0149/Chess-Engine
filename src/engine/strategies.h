@@ -2,4 +2,4 @@
 
 #include "structs.h"
 
-PossibleMove random_move(const GameState &game_state);
+PossibleMove computer_move(const GameState &game_state);

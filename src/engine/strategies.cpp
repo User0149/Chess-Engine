@@ -8,11 +8,6 @@
 
 using namespace emscripten;
 
-PossibleMove random_move(const GameState &game_state) {
-    std::vector<PossibleMove> next_moves = possible_moves(game_state);
-    return next_moves[0];
-}
-
 // evaluates how much advantage the player to move has
 double eval(const GameState& game_state, const int depth) {
     if (is_checkmate(game_state)) {
@@ -34,6 +29,11 @@ double eval(const GameState& game_state, const int depth) {
     }
 
     return advantage;
+}
+
+PossibleMove random_move(const GameState &game_state) {
+    std::vector<PossibleMove> next_moves = possible_moves(game_state);
+    return next_moves[0];
 }
 
 PossibleMove minimax_move(const GameState &game_state, const int depth) {
