@@ -9,7 +9,7 @@
 using namespace emscripten;
 
 // evaluates how much advantage the player to move has
-double eval(const GameState& game_state, const int depth) {
+double eval(const GameState& game_state, const int depth, double alpha = -INFINITY) {
     const double MOBILITY_FACTOR = 0.005;
     const double CASTLING_FACTOR = 0.05;
 
@@ -26,24 +26,27 @@ double eval(const GameState& game_state, const int depth) {
     
     std::vector<PossibleMove> next_moves = possible_moves(game_state);
 
-    double advantage = -INFINITY;
-    for (PossibleMove move:next_moves) {
-        advantage = std::max(advantage, -eval(move.game_state, depth - 1));
-    }
-
-    // consider mobility of current state
     GameState opp_game_state = game_state;
     opp_game_state.to_move = (game_state.to_move == "white" ? "black" : "white");
 
     int player_moves = (int)next_moves.size();
     int opponent_moves = (int)possible_moves(opp_game_state).size();
 
-    advantage += MOBILITY_FACTOR * (player_moves - opponent_moves);
+    double additional_advantage = MOBILITY_FACTOR * (player_moves - opponent_moves) + CASTLING_FACTOR * (game_state.has_castled_white - game_state.has_castled_black);
 
-    // consider castling
-    advantage += CASTLING_FACTOR * (game_state.has_castled_white - game_state.has_castled_black);
+    // search through our moves
+    double base_advantage = -INFINITY;
+    for (PossibleMove move:next_moves) {
+        double beta = base_advantage + additional_advantage; // advantage that we can force
+        if (beta > -alpha) { // this move is worse for the opponent than their best move so far
+            return -alpha + 100;
+        }
 
-    return advantage;
+        base_advantage = std::max(base_advantage, -eval(move.game_state, depth - 1, beta));
+    }
+
+
+    return base_advantage + additional_advantage;
 }
 
 PossibleMove random_move(const GameState &game_state) {
@@ -52,12 +55,33 @@ PossibleMove random_move(const GameState &game_state) {
 }
 
 PossibleMove negamax_move(const GameState &game_state, const int depth) {
+    const double MOBILITY_FACTOR = 0.005;
+    const double CASTLING_FACTOR = 0.05;
+
     std::vector<PossibleMove> next_moves = possible_moves(game_state);
 
-    // play the move that minimises opponent's advantage
-    return *std::min_element(next_moves.begin(), next_moves.end(), [depth](const PossibleMove a, const PossibleMove b){
-        return eval(a.game_state, depth - 1) < eval(b.game_state, depth - 1);
-    });
+    GameState opp_game_state = game_state;
+    opp_game_state.to_move = (game_state.to_move == "white" ? "black" : "white");
+
+    int player_moves = (int)next_moves.size();
+    int opponent_moves = (int)possible_moves(opp_game_state).size();
+
+    double additional_advantage = MOBILITY_FACTOR * (player_moves - opponent_moves) + CASTLING_FACTOR * (game_state.has_castled_white - game_state.has_castled_black);
+
+    // play the move that maximises our advantage
+    double base_advantage = -INFINITY;
+    PossibleMove best_move;
+    for (PossibleMove move:next_moves) {
+        double alpha = base_advantage + additional_advantage;
+        double eval_child = -eval(move.game_state, depth - 1, alpha);
+
+        if (eval_child > base_advantage) {
+            base_advantage = eval_child;
+            best_move = move;
+        }
+    }
+
+    return best_move;
 }
 
 PossibleMove greedy_move(const GameState &game_state) {
@@ -65,7 +89,7 @@ PossibleMove greedy_move(const GameState &game_state) {
 }
 
 PossibleMove computer_move(const GameState &game_state) {
-    const int DEPTH = 2;
+    const int DEPTH = 3;
     return negamax_move(game_state, DEPTH);
 }
 
