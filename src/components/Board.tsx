@@ -1,6 +1,6 @@
-import { useContext, type ReactNode } from "react";
+import { useContext, useState, type ReactNode } from "react";
 
-import type { File, PossibleMove, Rank, Square } from "../types/types";
+import type { File, PossibleMove, Rank, StateSetter } from "../types/types";
 
 import { squareToCoord } from "../utils/coordinateConverter";
 import { toEngineGameState, toJSPossibleMove } from "../utils/jsEmbindConverter";
@@ -12,9 +12,16 @@ import { EngineContext } from "../context/EngineContext";
 interface BoardSquareProps {
     rank: Rank;
     file: File;
+    setShowPromotionModal: StateSetter<boolean>;
+    setPromotionOptions: StateSetter<PossibleMove[]>;
 }
 
-function BoardSquare({ file, rank }: BoardSquareProps) {
+interface PromotionModalProps {
+    setShowPromotionModal: StateSetter<boolean>;
+    promotionOptions: PossibleMove[];
+}
+
+function BoardSquare({ file, rank, setShowPromotionModal, setPromotionOptions }: BoardSquareProps) {
     const { bgWhite, bgBlack, bgSelected } = useContext(ThemeContext);
     const { playerColor, gameProgress, gameState, lastMove, selectedSquare, makeMove, setSelectedSquare } = useContext(GameContext);
     const engine: any = useContext(EngineContext);
@@ -65,18 +72,20 @@ function BoardSquare({ file, rank }: BoardSquareProps) {
 
                 // do the move, if legal
                 if (moveOptions.length === 0) { // illegal move
+                    setSelectedSquare(null);
                 }
                 else if (moveOptions.length === 1) { // non-promotion move
                     makeMove(moveOptions[0]);
+                    setSelectedSquare(null);
                 }
                 else if (moveOptions.length === 4) { // promotion
-                    console.log("Promotion not supported yet.");
+                    setShowPromotionModal(true);
+                    setPromotionOptions(moveOptions);
                 }
                 else {
+                    setSelectedSquare(null);
                     throw new Error("Error: what is this move");
                 }
-
-                setSelectedSquare(null);
             }
         }
     };
@@ -98,8 +107,40 @@ function BoardSquare({ file, rank }: BoardSquareProps) {
     );
 }
 
+function PromotionModal({ setShowPromotionModal, promotionOptions }: PromotionModalProps) {
+    const { playerColor, setSelectedSquare, makeMove } = useContext(GameContext);
+
+    return (
+        <div className="absolute inset-0 flex flex-col items-center pt-30 h-full w-full bg-black/50 z-1000" onClick={() => {
+            setShowPromotionModal(false);
+            setSelectedSquare(null);
+        }}>
+            <div className="text-white text-2xl p-4">
+                Promote to
+            </div>
+            <div className="grid grid-cols-2">
+                {
+                    promotionOptions.map(possibleMove => {
+                        const pieceType = possibleMove.move.newPieceType;
+                        return (
+                            <img key={pieceType} src={`./assets/chess-pieces/${pieceType}-${playerColor}.svg`} className="w-25 h-25 p-2 cursor-pointer" onClick={() => {
+                                makeMove(possibleMove);
+                                setShowPromotionModal(false);
+                                setSelectedSquare(null);
+                            }} />
+                        );
+                    })
+                }
+            </div>
+        </div>
+    );    
+}
+
 export default function Board() {
     const { playerColor, gameProgress } = useContext(GameContext);
+
+    const [showPromotionModal, setShowPromotionModal] = useState(false);
+    const [promotionOptions, setPromotionOptions] = useState<PossibleMove[]>([]);
 
     const Squares: ReactNode[] = [];
 
@@ -114,17 +155,20 @@ export default function Board() {
     for (const rank of ranks) {
         for (const file of files) {
             Squares.push(
-                <BoardSquare key={`${file}${rank}`} file={file} rank={rank} />
+                <BoardSquare key={`${file}${rank}`} file={file} rank={rank} setShowPromotionModal={setShowPromotionModal} setPromotionOptions={setPromotionOptions} />
             );
         }
     }
 
     return (
         <div className="h-full w-full p-4">
-            <div className="board h-full aspect-square grid grid-cols-8 relative">
-                {Squares}
+            <div className="h-full aspect-square relative">
+                <div className="grid grid-cols-8">
+                    {Squares}
+                </div>
 
-                {gameProgress !== "in progress" && <div className="absolute inset-0 h-full w-full bg-black opacity-20"></div>}
+                {gameProgress !== "in progress" && <div className="absolute inset-0 h-full w-full bg-black opacity-20 z-1000"></div>}
+                {showPromotionModal && <PromotionModal promotionOptions={promotionOptions} setShowPromotionModal={setShowPromotionModal} />}
             </div>
         </div>
     );
