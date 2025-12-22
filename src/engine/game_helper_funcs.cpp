@@ -169,7 +169,20 @@ bool insufficient_material(const GameState &game_state) {
     }
 }
 
+bool is_draw(const GameState &game_state) {
+    return (
+        is_stalemate(game_state) || 
+        threefold_repetition(game_state) || 
+        fifty_move_rule(game_state) || 
+        insufficient_material(game_state)
+    );
+}
+
 EMSCRIPTEN_BINDINGS(game_helper_funcs) {
-    function("isStalemate", &is_stalemate);
     function("isCheckmate", &is_checkmate);
+    function("isStalemate", &is_stalemate);
+    function("threefoldRepetition", &threefold_repetition);
+    function("fiftyMoveRule", &fifty_move_rule);
+    function("insufficientMaterial", &insufficient_material);
+    function("isDraw", &is_draw);
 }

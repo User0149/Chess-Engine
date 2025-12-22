@@ -27,8 +27,13 @@ function insufficientMaterial(engine: any, gameState: GameState): boolean {
     return engine.insufficientMaterial(toEngineGameState(engine, gameState));
 }
 
+function isDraw(engine: any, gameState: GameState): boolean {
+    if (!engine.isDraw) return false;
+    return engine.isDraw(toEngineGameState(engine, gameState));
+}
+
 export function isGameOver(engine: any, gameState: GameState) {
-    return isCheckmate(engine, gameState) || isStalemate(engine, gameState) || threefoldRepetition(engine, gameState) || fiftyMoveRule(engine, gameState) || insufficientMaterial(engine, gameState);
+    return isCheckmate(engine, gameState) || isDraw(engine, gameState);
 }
 
 export function gameResult(engine: any, gameState: GameState, playerColor: PlayerColor) {

@@ -13,6 +13,7 @@ export const EngineContext = createContext({
     threefoldRepetition: null,
     fiftyMoveRule: null,
     insufficientMaterial: null,
+    isDraw: null,
 
     possibleMoves: null,
     computerMove: null
@@ -25,6 +26,7 @@ export default function EngineContextProvider({ children }: EngineContextProvide
         threefoldRepetition: null,
         fiftyMoveRule: null,
         insufficientMaterial: null,
+        isDraw: null,
 
         possibleMoves: null,
         computerMove: null
