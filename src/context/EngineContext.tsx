@@ -11,7 +11,7 @@ export const EngineContext = createContext({
     isCheckmate: null,
     isStalemate: null,
     possibleMoves: null,
-    randomMove: null
+    computerMove: null
 });
 
 export default function EngineContextProvider({ children }: EngineContextProviderProps) {
@@ -19,7 +19,7 @@ export default function EngineContextProvider({ children }: EngineContextProvide
         isCheckmate: null,
         isStalemate: null,
         possibleMoves: null,
-        randomMove: null
+        computerMove: null
     });
 
     useEffect(() => {

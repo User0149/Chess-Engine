@@ -159,7 +159,7 @@ export default function GameContextProvider({ children }: GameContextProviderPro
             }
 
             if (gameState.toMove !== playerColor) { // do computer's move
-                const computerMove = engine.randomMove(toEngineGameState(engine, gameState));
+                const computerMove = engine.computerMove(toEngineGameState(engine, gameState));
                 makeMove(toJSPossibleMove(computerMove));
             }
         }

@@ -14,6 +14,10 @@ PossibleMove random_move(const GameState &game_state) {
     return moves[int(rng()%((int)moves.size()))];
 }
 
+PossibleMove computer_move(const GameState &game_state) {
+    return random_move(game_state);
+}
+
 EMSCRIPTEN_BINDINGS(strategies) {
-    function("randomMove", &random_move);
+    function("computerMove", &computer_move);
 }
