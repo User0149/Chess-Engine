@@ -46,6 +46,10 @@ std::vector<PossibleMove> normal_piece_moves(const GameState &game_state, Piece 
 
             new_game_state.previous_states[new_game_state.hash()]++;
 
+            if (piece.type == "king" && piece.moves == 0) {
+                (game_state.to_move == "white" ? new_game_state.castling_advantage_white : new_game_state.castling_advantage_black) = -1.0;
+            }
+
             if (!is_targeted(new_game_state, king_square(new_game_state))) { // we don't put our king in check, so this move is valid
                 new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
 
@@ -95,7 +99,7 @@ std::vector<PossibleMove> castling_moves(const GameState &game_state, Piece king
                 GameState new_game_state = game_state;
 
                 new_game_state.moves = game_state.moves + 1;
-                (game_state.to_move == "white" ? new_game_state.has_castled_white : new_game_state.has_castled_black) = true;
+                (game_state.to_move == "white" ? new_game_state.castling_advantage_white : new_game_state.castling_advantage_black) = 1.0;
                 new_game_state.last_capture_or_pawn_move = game_state.last_capture_or_pawn_move; // castling is not a capture nor a pawn move
 
                 // move king

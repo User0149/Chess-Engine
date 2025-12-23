@@ -23,8 +23,8 @@ export interface GameState {
     previousStates: Record<string, number>;
     lastCaptureOrPawnMove: number;
     toMove: PlayerColor;
-    hasCastledWhite: boolean;
-    hasCastledBlack: boolean;
+    castlingAdvantageWhite: number;
+    castlingAdvantageBlack: number;
 
     boardState: BoardState;
 }
