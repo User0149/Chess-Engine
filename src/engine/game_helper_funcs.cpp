@@ -29,29 +29,36 @@ bool is_targeted(const GameState &game_state, Square test_square) {
 
             if (piece.active && piece.color != game_state.to_move){ // brute force through all opponent pieces
                 if (piece.type != "pawn") {
-                    for (Coordinate direction:piece.attack_directions()) {
-                        for (int r = 1; r <= piece.attack_range(); r++) {
-                            int dest_i = coord.i + (r * direction.i);
-                            int dest_j = coord.j + (r * direction.j);
+                    Coordinate needed_direction = simplified_direction_vector(coord, square_to_coord(test_square));
+                    std::vector<Coordinate> attack_directions = piece.attack_directions();
 
-                            if (!valid_coord({dest_i, dest_j})) {
-                                break;
-                            }
-                            
-                            Piece dest_piece = game_state.board_state[dest_i][dest_j];
-                            if (dest_piece.active && dest_piece.color != game_state.to_move) { // can't move past a friendly piece
-                                break;
-                            }
+                    if (find(attack_directions.begin(), attack_directions.end(), needed_direction) == attack_directions.end()) {
+                        // move on to next piece; this piece cannot attack the test square
+                        continue;
+                    }
 
-                            // opponent piece targets this square
-                            Square dest_square = coord_to_square({dest_i, dest_j});
-                            if (test_square.file == dest_square.file && test_square.rank == dest_square.rank) {
-                                return true;
-                            }
+                    // check to see if the piece can reach test_square
+                    for (int r = 1; r <= piece.attack_range(); r++) {
+                        int dest_i = coord.i + (r * needed_direction.i);
+                        int dest_j = coord.j + (r * needed_direction.j);
 
-                            if (dest_piece.active &&  dest_piece.color == game_state.to_move) { // we are on this square, so opponent can't move any further
-                                break;
-                            }
+                        if (!valid_coord({dest_i, dest_j})) {
+                            break;
+                        }
+                        
+                        Piece dest_piece = game_state.board_state[dest_i][dest_j];
+                        if (dest_piece.active && dest_piece.color != game_state.to_move) { // can't move past a friendly piece
+                            break;
+                        }
+
+                        // opponent piece targets this square
+                        Square dest_square = coord_to_square({dest_i, dest_j});
+                        if (test_square.file == dest_square.file && test_square.rank == dest_square.rank) {
+                            return true;
+                        }
+
+                        if (dest_piece.active &&  dest_piece.color == game_state.to_move) { // we are on this square, so opponent can't move any further
+                            break;
                         }
                     }
                 }

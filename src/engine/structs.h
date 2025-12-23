@@ -8,11 +8,22 @@
 struct Coordinate {
     int i = 0;
     int j = 0;
+
+    bool operator==(const Coordinate& b) const {
+        return (i == b.i && j == b.j);
+    }
+    Coordinate operator-(const Coordinate& b) const {
+        return {i - b.i, j - b.j};
+    }
 };
 
 struct Square {
     std::string file = "a";
     std::string rank = "1";
+
+    bool operator==(const Square& b) const {
+        return (file == b.file && rank == b.rank);
+    }
 };
 
 struct Move {
