@@ -50,11 +50,6 @@ double eval(const GameState& game_state, const int depth, double alpha = -INFINI
     return base_advantage + additional_advantage;
 }
 
-PossibleMove random_move(const GameState &game_state) {
-    std::vector<PossibleMove> next_moves = possible_moves(game_state);
-    return next_moves[0];
-}
-
 PossibleMove negamax_move(const GameState &game_state, const int depth) {
     std::vector<PossibleMove> next_moves = possible_moves(game_state);
 
@@ -80,10 +75,6 @@ PossibleMove negamax_move(const GameState &game_state, const int depth) {
     }
 
     return best_move;
-}
-
-PossibleMove greedy_move(const GameState &game_state) {
-    return negamax_move(game_state, 1);
 }
 
 PossibleMove computer_move(const GameState &game_state) {
