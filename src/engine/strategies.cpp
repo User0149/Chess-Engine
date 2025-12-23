@@ -9,8 +9,8 @@
 using namespace emscripten;
 
 const int DEPTH = 3;
-const double MOBILITY_FACTOR = 0.015;
-const double CASTLING_FACTOR = 0.1;
+const double MOBILITY_FACTOR = 0.02;
+const double CASTLING_FACTOR = 0.2;
 const double INF = 1e9;
 
 // evaluates how much advantage the player to move has
