@@ -62,7 +62,7 @@ PossibleMove negamax_move(const GameState &game_state, const int depth) {
     double additional_advantage = MOBILITY_FACTOR * (player_moves - opponent_moves) + CASTLING_FACTOR * (game_state.to_move == "white" ? 1.0 : -1.0) * (game_state.castling_advantage_white - game_state.castling_advantage_black);
 
     // play the move that maximises our advantage
-    double base_advantage = -INF;
+    double base_advantage = - 2 * INF; // must always be overridden
     PossibleMove best_move;
     for (PossibleMove move:next_moves) {
         double alpha = std::max(std::min(base_advantage + additional_advantage, INF), -INF);

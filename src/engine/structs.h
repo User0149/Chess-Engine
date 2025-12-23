@@ -28,7 +28,7 @@ struct Square {
 
 struct Move {
     Square source = {"a", "1"};
-    Square dest = {"1", "1"};
+    Square dest = {"a", "1"};
     std::string new_piece_type = "pawn";
 };
 
