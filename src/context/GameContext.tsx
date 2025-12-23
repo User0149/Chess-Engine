@@ -45,7 +45,8 @@ export const GameContext = createContext<IGameContext>({
     lastMove: {
         source: { file: "a", rank: "1" },
         dest: { file: "a", rank: "1" },
-        newPieceType: "pawn"
+        newPieceType: "pawn",
+        dangerous: false
     },
     selectedSquare: null,
 
@@ -66,7 +67,8 @@ export default function GameContextProvider({ children }: GameContextProviderPro
     const [lastMove, setLastMove] = useState<Move>({
         source: { file: "a", rank: "1" },
         dest: { file: "a", rank: "1" },
-        newPieceType: "pawn"
+        newPieceType: "pawn",
+        dangerous: false
     });
 
     const [selectedSquare, setSelectedSquare] = useState<Square | null>(null);

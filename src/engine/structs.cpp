@@ -85,6 +85,7 @@ EMSCRIPTEN_BINDINGS(structs) {
         .field("source", &Move::source)
         .field("dest", &Move::dest)
         .field("newPieceType", &Move::new_piece_type)
+        .field("dangerous", &Move::dangerous)
         ;
     value_object<Piece>("Piece")
         .field("active", &Piece::active)

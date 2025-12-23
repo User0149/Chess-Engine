@@ -41,6 +41,7 @@ export interface Move {
     source: Square;
     dest: Square;
     newPieceType: PieceType;
+    dangerous: boolean;
 }
 
 export interface PossibleMove {

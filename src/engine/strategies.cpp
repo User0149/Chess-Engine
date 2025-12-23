@@ -14,7 +14,7 @@ const double CASTLING_FACTOR = 0.75;
 const double INF = 1e9;
 
 // evaluates how much advantage the player to move has
-double eval(const GameState& game_state, const int depth, double alpha = -INF) {
+double eval(const GameState& game_state, const int depth, const double alpha, const bool dangerous) {
     if (is_checkmate(game_state)) {
         return -INF;
     }
@@ -22,9 +22,10 @@ double eval(const GameState& game_state, const int depth, double alpha = -INF) {
         return 0.0;
     }
 
-    if (depth <= 0) { // base case: simply count material advantage on the board
+    if (depth <= 0 && !dangerous) { // base case: simply count material advantage on the board
         return game_state.eval();
     }
+    if (depth <= 0) printf("%d\n", depth);
     
     std::vector<PossibleMove> next_moves = possible_moves(game_state);
 
@@ -44,7 +45,7 @@ double eval(const GameState& game_state, const int depth, double alpha = -INF) {
             return INF;
         }
 
-        base_advantage = std::max(base_advantage, -eval(move.game_state, depth - 1, beta));
+        base_advantage = std::max(base_advantage, -eval(move.game_state, depth - 1, beta, move.move.dangerous));
     }
 
     return std::max(std::min(base_advantage + additional_advantage, INF), -INF);
@@ -66,7 +67,7 @@ PossibleMove negamax_move(const GameState &game_state, const int depth) {
     PossibleMove best_move;
     for (PossibleMove move:next_moves) {
         double alpha = std::max(std::min(base_advantage + additional_advantage, INF), -INF);
-        double eval_child = -eval(move.game_state, depth - 1, alpha);
+        double eval_child = -eval(move.game_state, depth - 1, alpha, move.move.dangerous);
 
         if (eval_child > base_advantage) {
             base_advantage = eval_child;

@@ -33,10 +33,14 @@ std::vector<PossibleMove> normal_piece_moves(const GameState &game_state, Piece 
 
             // we can move to this square (ignoring king checks)
             GameState new_game_state = game_state;
+            bool dangerous = false;
 
             new_game_state.moves = game_state.moves + 1;
             if (dest_piece.active && dest_piece.color != game_state.to_move) {
                 new_game_state.last_capture_or_pawn_move = game_state.moves + 1;
+
+                // capturing with a greater valued piece is dangerous
+                dangerous = (piece.value() >= dest_piece.value());
             }
 
             // move piece
@@ -54,7 +58,7 @@ std::vector<PossibleMove> normal_piece_moves(const GameState &game_state, Piece 
             if (!is_targeted(new_game_state, king_square(new_game_state))) { // we don't put our king in check, so this move is valid
                 new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
 
-                Move move = {square, coord_to_square({dest_i, dest_j}), piece.type};
+                Move move = {square, coord_to_square({dest_i, dest_j}), piece.type, dangerous};
                 allowed_moves.push_back({move, new_game_state});
             }
 
@@ -120,7 +124,7 @@ std::vector<PossibleMove> castling_moves(const GameState &game_state, Piece king
                 if (!is_targeted(new_game_state, king_square(new_game_state))) { // i don't see how our king can be targeted if it doesn't step through targeted squares but let's include this check anyway
                     new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
 
-                    Move move = {king_pos_square, king_dest_square, "king"};
+                    Move move = {king_pos_square, king_dest_square, "king", false};
                     allowed_moves.push_back({move, new_game_state});
                 }
             }
@@ -179,10 +183,12 @@ std::vector<PossibleMove> pawn_non_en_passant_moves(const GameState &game_state,
             Piece dest_piece = game_state.board_state[dest_coord.i][dest_coord.j];
             GameState new_game_state = game_state;
 
+            // promotions and captures of pawns are dangerous
+            bool dangerous = (dest_piece.active && dest_piece.color != game_state.to_move && pawn.value() >= dest_piece.value()) || new_piece_type != "pawn";
+
             new_game_state.moves = game_state.moves + 1;
             new_game_state.last_capture_or_pawn_move = game_state.moves + 1;
 
-            
             // move piece
             new_game_state.board_state[pawn_coord.i][pawn_coord.j].active = false;
             new_game_state.board_state[dest_coord.i][dest_coord.j] = pawn;
@@ -195,7 +201,7 @@ std::vector<PossibleMove> pawn_non_en_passant_moves(const GameState &game_state,
             if (!is_targeted(new_game_state, king_square(new_game_state))) { // we don't put our king in check, so this move is valid
                 new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
 
-                Move move = {pawn_square, dest_square, new_piece_type};
+                Move move = {pawn_square, dest_square, new_piece_type, dangerous};
                 allowed_moves.push_back({move, new_game_state});
             }
         }
@@ -244,7 +250,7 @@ std::vector<PossibleMove> pawn_en_passant_moves(const GameState &game_state, Pie
 
                     if (!is_targeted(new_game_state, king_square(new_game_state))) { // we don't put our king in check, so this move is valid
                         new_game_state.to_move = game_state.to_move == "white" ? "black" : "white";
-                        Move move = {pawn_square, coord_to_square(dest_coord), "pawn"};
+                        Move move = {pawn_square, coord_to_square(dest_coord), "pawn", false};
                         allowed_moves.push_back({move, new_game_state});
                     }
                 }
