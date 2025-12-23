@@ -9,7 +9,7 @@
 using namespace emscripten;
 
 const int DEPTH = 3;
-const double MOBILITY_FACTOR = 0.01;
+const double MOBILITY_FACTOR = 0.015;
 const double CASTLING_FACTOR = 0.1;
 const double INF = 1e9;
 
@@ -47,7 +47,6 @@ double eval(const GameState& game_state, const int depth, double alpha = -INF) {
         base_advantage = std::max(base_advantage, -eval(move.game_state, depth - 1, beta));
     }
 
-
     return std::max(std::min(base_advantage + additional_advantage, INF), -INF);
 }
 
@@ -69,14 +68,11 @@ PossibleMove negamax_move(const GameState &game_state, const int depth) {
         double alpha = std::max(std::min(base_advantage + additional_advantage, INF), -INF);
         double eval_child = -eval(move.game_state, depth - 1, alpha);
 
-        printf("%lf\n", eval_child);
-
         if (eval_child > base_advantage) {
             base_advantage = eval_child;
             best_move = move;
         }
     }
-    printf("\n%lf\n\n%lf\n", base_advantage, MOBILITY_FACTOR * player_moves);
 
     return best_move;
 }

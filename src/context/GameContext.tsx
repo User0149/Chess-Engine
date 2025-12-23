@@ -85,33 +85,6 @@ export default function GameContextProvider({ children }: GameContextProviderPro
 
         const colors: PlayerColor[] = ["white", "black"];
 
-        initialBoard[0][0] = {            
-            active: true,
-            color: "black",
-            type: "king",
-
-            moves: 0,
-            lastMoveIndex: 0
-        };
-        initialBoard[1][2] = {            
-            active: true,
-            color: "white",
-            type: "king",
-
-            moves: 0,
-            lastMoveIndex: 0
-        };
-        initialBoard[5][1] = {            
-            active: true,
-            color: "white",
-            type: "queen",
-
-            moves: 0,
-            lastMoveIndex: 0
-        };
-
-        return initialBoard;
-
         // put playing pieces into place
         type NonPawnPiece = Exclude<PieceType, "pawn">;
         const initialPieceFiles: Record<NonPawnPiece, File[]> = {
