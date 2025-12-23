@@ -305,7 +305,6 @@ std::vector<PossibleMove> possible_moves(const GameState &game_state) {
         return a.game_state.eval() < b.game_state.eval();
     });
 
-
     return allowed_moves;
 }
 
