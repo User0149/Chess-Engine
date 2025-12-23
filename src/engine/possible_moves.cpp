@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <random>
+#include <algorithm>
 
 #include "game_helper_funcs.h"
 #include "utils.h"
@@ -298,6 +299,12 @@ std::vector<PossibleMove> possible_moves(const GameState &game_state) {
     // randomise moves
     static std::mt19937 rng(time(0));
     std::shuffle(allowed_moves.begin(), allowed_moves.end(), rng);
+
+    // put the best moves first and randomise equal moves by stable sorting
+    std::stable_sort(allowed_moves.begin(), allowed_moves.end(), [](const PossibleMove a, const PossibleMove b) {
+        return a.game_state.eval() < b.game_state.eval();
+    });
+
 
     return allowed_moves;
 }
