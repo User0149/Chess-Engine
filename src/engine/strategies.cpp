@@ -15,7 +15,7 @@ const double CASTLING_FACTOR = 0.1;
 // evaluates how much advantage the player to move has
 double eval(const GameState& game_state, const int depth, double alpha = -INFINITY) {
     if (is_checkmate(game_state)) {
-        return -INFINITY;
+        return -1e9;
     }
     if (is_draw(game_state)) {
         return 0.0;
