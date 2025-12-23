@@ -19,7 +19,9 @@ bool valid_coord(Coordinate coord) {
 }
 
 Coordinate simplified_direction_vector(Coordinate source, Coordinate dest) {
-    if (source == dest) return {0, 0};
+    if (source == dest) {
+        return {0, 0};
+    }
 
     Coordinate difference_vector = dest - source;
     int GCD = abs(std::gcd(difference_vector.i, difference_vector.j));
