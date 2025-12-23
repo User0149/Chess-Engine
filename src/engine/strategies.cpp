@@ -25,8 +25,6 @@ double eval(const GameState& game_state, const int depth, const double alpha, co
     if (depth <= 0 && !dangerous) { // base case: simply count material advantage on the board
         return game_state.eval();
     }
-    if (depth <= 0) printf("%d\n", depth);
-    
     std::vector<PossibleMove> next_moves = possible_moves(game_state);
 
     GameState opp_game_state = game_state;
