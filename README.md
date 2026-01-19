@@ -4,12 +4,3 @@ To run locally:
 1. Run `make` or `make all` to compile the chess engine and build the frontend
 
 The static files will be available in the `dist/` folder, which can then be served.
-
-
-
-
-
-
-
-
-
