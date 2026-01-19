@@ -1,5 +1,7 @@
 node_modules/
 dist/
 
+emsdk/
+
 src/engine/engine.mjs
 src/engine/engine.wasm
