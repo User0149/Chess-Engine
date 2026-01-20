@@ -170,7 +170,7 @@ export default function GameContextProvider({ children }: GameContextProviderPro
                 }
             }
         }, 0);
-    }, [gameState, gameProgress]);
+    }, [gameState, gameProgress, playerColor]);
 
     const makeMove = (possibleMove: PossibleMove) => {
         setGameState(possibleMove.gameState);
